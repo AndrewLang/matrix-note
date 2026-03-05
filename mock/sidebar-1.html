@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notebook Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Include simplemde for the markdown editor -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #313338;
+            overflow: hidden;
+        }
+
+        /* Global Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #333333;
+            border-radius: 10px;
+            border: 3px solid transparent;
+            background-clip: padding-box;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #4a4a4a;
+        }
+
+        /* Custom scrollbar matching the dark theme */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #333333;
+            border-radius: 10px;
+            border: none;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: #4a4a4a;
+        }
+
+        /* Root variable overrides to match image colors */
+        .bg-app {
+            background-color: #111111;
+        }
+
+        .bg-titlebar {
+            background-color: #161616;
+        }
+
+        .bg-sidebar-nav {
+            background-color: #131313;
+        }
+
+        .bg-sidebar-content {
+            background-color: #141414;
+        }
+
+        .bg-tab-bar {
+            background-color: #0d0d0d;
+        }
+
+        .text-dim {
+            color: #828282;
+        }
+
+        .text-normal {
+            color: #d4d4d4;
+        }
+
+        .text-active {
+            color: #ffffff;
+        }
+
+        .border-color {
+            border-color: #262626;
+        }
+
+        /* SimpleMDE overrides for dark theme */
+        .editor-toolbar {
+            display: none !important;
+        }
+
+        .CodeMirror {
+            background-color: #111111;
+            color: #d4d4d4;
+            border: none;
+            height: 100%;
+            padding: 32px;
+            font-size: 15px;
+            line-height: 1.6;
+            outline: none !important;
+        }
+
+        .CodeMirror-vscrollbar {
+            right: 0px !important;
+        }
+
+        .CodeMirror-cursor {
+            border-left-color: #ffffff;
+        }
+
+        .CodeMirror-focused {
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        .CodeMirror pre.CodeMirror-line {
+            padding: 0 4px;
+        }
+
+        /* Custom Checkbox */
+        .checkbox-custom {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkbox-unchecked {
+            background-color: #2a2a2a;
+        }
+
+        .checkbox-checked {
+            background-color: #fce454;
+            /* Exact yellow from image */
+        }
+
+        .checkbox-checked svg {
+            color: #000000;
+            width: 11px;
+            height: 11px;
+            stroke-width: 3.5;
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center p-8 h-screen selection:bg-gray-500/30">
+
+    <!-- Outermost container to simulate application window like the screenshot -->
+    <div
+        class="w-full max-w-[1400px] h-full bg-app rounded-xl overflow-hidden flex flex-col border border-[#2a2a2a] shadow-2xl shadow-black/50">
+
+        <!-- Windows Titlebar -->
+        <div
+            class="h-[30px] bg-titlebar flex items-center justify-between flex-shrink-0 select-none w-full border-b border-[#222222]">
+            <div class="flex items-center gap-3 pl-4 w-1/3">
+                <svg class="w-3.5 h-3.5 text-dim opacity-80" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h7v7h-7v-7z" />
+                </svg>
+                <span class="text-[11px] text-dim tracking-wide font-medium">Notebook Editor</span>
+            </div>
+
+            <div class="flex-1 flex justify-center h-full items-center">
+                <div
+                    class="flex items-center bg-[#222222] rounded-[4px] w-[300px] h-[22px] px-2.5 text-[11px] border border-transparent hover:border-[#3a3a3a] transition-colors shadow-sm">
+                    <svg class="w-3 h-3 text-dim opacity-70 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" placeholder="Search Notebook Editor"
+                        class="bg-transparent border-none text-normal focus:outline-none w-full placeholder-dim font-medium">
+                </div>
+            </div>
+
+            <div class="flex h-full w-1/3 justify-end">
+                <button
+                    class="w-11 h-full flex items-center justify-center text-dim hover:bg-[#ffffff1a] transition-colors">
+                    <svg class="w-2.5 h-2.5" stroke="currentColor" stroke-width="1.2" viewBox="0 0 10 10" fill="none">
+                        <path d="M 0 5 L 10 5" />
+                    </svg>
+                </button>
+                <button
+                    class="w-11 h-full flex items-center justify-center text-dim hover:bg-[#ffffff1a] transition-colors">
+                    <svg class="w-2.5 h-2.5" stroke="currentColor" stroke-width="1.2" viewBox="0 0 10 10" fill="none">
+                        <path d="M 1 1 L 9 1 L 9 9 L 1 9 Z" />
+                    </svg>
+                </button>
+                <button
+                    class="w-11 h-full flex items-center justify-center text-dim hover:bg-[#e81123] hover:text-white transition-colors">
+                    <svg class="w-2.5 h-2.5" stroke="currentColor" stroke-width="1.2" viewBox="0 0 10 10" fill="none">
+                        <path d="M 1 1 L 9 9 M 9 1 L 1 9" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- App Content Row -->
+        <div class="flex-1 flex overflow-hidden">
+
+            <!-- Sidebar Content (Mimics provided image) -->
+            <aside
+                class="w-[320px] bg-sidebar-content border-r border-[#222222] flex flex-col flex-shrink-0 z-10 relative">
+
+                <!-- Header / Navigation Tabs -->
+                <div class="px-4 py-3 pb-2 flex items-center justify-between border-b border-transparent">
+                    <div class="flex gap-[2px] text-[13.5px] font-medium tracking-tight">
+                        <button class="bg-[#2a2a2a] text-white px-3 py-1.5 rounded-[8px] shadow-sm">Market</button>
+                        <button
+                            class="text-[#8e8e8e] hover:text-[#d1d1d1] px-3 py-1.5 transition-colors">Insights</button>
+                        <button
+                            class="text-[#8e8e8e] hover:text-[#d1d1d1] px-3 py-1.5 transition-colors">Watchlists</button>
+                    </div>
+                    <div class="flex items-center gap-[14px] text-[#8e8e8e] pr-1">
+                        <!-- Search Icon -->
+                        <svg class="w-[18px] h-[18px] cursor-pointer hover:text-[#d1d1d1]" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <!-- Double Right Arrow -->
+                        <svg class="w-4 h-4 cursor-pointer hover:text-[#d1d1d1]" fill="currentColor"
+                            viewBox="0 0 24 24">
+                            <path d="M7 6l6 6-6 6M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Main Tree Container -->
+                <div class="flex-1 overflow-y-auto custom-scrollbar px-[10px] pb-4 select-none">
+
+                    <!-- Market type header -->
+                    <div class="px-2 py-3 mb-1">
+                        <span class="text-[#888888] text-[13.5px]">Market type</span>
+                    </div>
+
+                    <!-- ROOT: Perpetuals -->
+                    <div class="flex items-center py-1.5 px-[6px] cursor-pointer hover:bg-[#1f1f1f] rounded-[6px]"
+                        onclick="toggleFolder(this)">
+                        <div class="w-5 flex-shrink-0 flex items-center justify-center arrow-icon transition-transform duration-200"
+                            style="transform: rotate(0deg);">
+                            <!-- Down Arrow -->
+                            <svg class="w-3 h-3 text-[#aaaaaa]" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                            </svg>
+                        </div>
+                        <div class="checkbox-custom checkbox-unchecked mr-[12px] flex-shrink-0"></div>
+                        <span class="text-[#aaaaaa] text-[14px] flex-1 truncate font-[450]">Perpetuals</span>
+                        <span class="text-[#888888] text-[14px] pr-2">85</span>
+                    </div>
+
+                    <!-- Perpetuals Children Container -->
+                    <div class="relative pl-[11px] ml-[15px] folder-content">
+                        <!-- Vertical Line -->
+                        <div class="absolute left-0 top-1 bottom-1 w-[1px] bg-[#2a2a2a]"></div>
+
+                        <!-- Open Interest -->
+                        <div class="flex items-center py-1.5 px-2 cursor-pointer hover:bg-[#1f1f1f] rounded-[6px]">
+                            <div class="w-5 flex-shrink-0 flex items-center justify-center -ml-[5px]">
+                                <!-- Right Arrow -->
+                                <svg class="w-3 h-3 text-[#555555]" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
+                                </svg>
+                            </div>
+                            <div class="checkbox-custom checkbox-checked mr-[12px] flex-shrink-0">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 12.5l4 4 8.5-8.5"></path>
+                                </svg>
+                            </div>
+                            <span class="text-white font-[500] text-[14px] flex-1 truncate tracking-wide">Open
+                                Interest</span>
+                            <span class="text-[#888888] text-[14px] pr-[3px]">24</span>
+                        </div>
+
+                        <!-- Funding Rates -->
+                        <div class="flex items-center py-1.5 px-2 cursor-pointer hover:bg-[#1f1f1f] rounded-[6px]"
+                            onclick="toggleFolder(this)">
+                            <div class="w-5 flex-shrink-0 flex items-center justify-center -ml-[5px] arrow-icon transition-transform duration-200"
+                                style="transform: rotate(0deg);">
+                                <!-- Down Arrow -->
+                                <svg class="w-3 h-3 text-[#aaaaaa]" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                </svg>
+                            </div>
+                            <div class="checkbox-custom checkbox-unchecked mr-[12px] flex-shrink-0"></div>
+                            <span class="text-[#aaaaaa] text-[14px] flex-1 truncate font-[450]">Funding Rates</span>
+                            <span class="text-[#888888] text-[14px] pr-[3px]">12</span>
+                        </div>
+
+                        <!-- Funding Rates Children Container -->
+                        <div class="relative pl-[11px] ml-[11px] folder-content">
+                            <div class="absolute left-0 top-1 bottom-1 w-[1px] bg-[#2a2a2a]"></div>
+
+                            <!-- Positive Funding -->
+                            <div class="flex items-center py-1.5 px-2 cursor-pointer hover:bg-[#1f1f1f] rounded-[6px]">
+                                <div class="w-5 flex-shrink-0 -ml-[5px]"></div>
+                                <div class="checkbox-custom checkbox-unchecked mr-[12px] flex-shrink-0"></div>
+                                <span class="text-[#888888] text-[14px] flex-1 truncate font-[450]">Positive
+                                    Funding</span>
+                                <span class="text-[#888888] text-[14px] pr-[3px]">4</span>
+                            </div>
+
+                            <!-- Negative Funding -->
+                            <div class="flex items-center py-1.5 px-2 cursor-pointer hover:bg-[#1f1f1f] rounded-[6px]">
+                                <div class="w-5 flex-shrink-0 -ml-[5px]"></div>
+                                <div class="checkbox-custom checkbox-unchecked mr-[12px] flex-shrink-0"></div>
+                                <span class="text-[#888888] text-[14px] flex-1 truncate font-[450]">Negative
+                                    Funding</span>
+                                <span class="text-[#888888] text-[14px] pr-[3px]">3</span>
+                            </div>
+                        </div>
+
+                        <!-- Newly Listed Perps -->
+                        <div class="flex items-center py-1.5 px-2 cursor-pointer hover:bg-[#1f1f1f] rounded-[6px]">
+                            <div class="w-5 flex-shrink-0 flex items-center justify-center -ml-[5px]">
+                                <svg class="w-3 h-3 text-[#555555]" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
+                                </svg>
+                            </div>
+                            <div class="checkbox-custom checkbox-unchecked mr-[12px] flex-shrink-0"></div>
+                            <span class="text-[#aaaaaa] text-[14px] flex-1 truncate font-[450]">Newly Listed
+                                Perps</span>
+                            <span class="text-[#888888] text-[14px] pr-[3px]">9</span>
+                        </div>
+
+                        <!-- Low Liquidity Perps -->
+                        <div class="flex items-center py-1.5 px-2 cursor-pointer hover:bg-[#1f1f1f] rounded-[6px]">
+                            <div class="w-5 flex-shrink-0 flex items-center justify-center -ml-[5px]">
+                                <svg class="w-3 h-3 text-[#555555]" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
+                                </svg>
+                            </div>
+                            <div class="checkbox-custom checkbox-unchecked mr-[12px] flex-shrink-0"></div>
+                            <span class="text-[#aaaaaa] text-[14px] flex-1 truncate font-[450]">Low Liquidity
+                                Perps</span>
+                            <span class="text-[#888888] text-[14px] pr-[3px]">8</span>
+                        </div>
+
+                        <!-- Points Farming Live -->
+                        <div class="flex items-center py-1.5 px-2 cursor-pointer hover:bg-[#1f1f1f] rounded-[6px]">
+                            <div class="w-5 flex-shrink-0 flex items-center justify-center -ml-[5px]">
+                                <svg class="w-3 h-3 text-[#555555]" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
+                                </svg>
+                            </div>
+                            <div class="checkbox-custom checkbox-unchecked mr-[12px] flex-shrink-0"></div>
+                            <span class="text-[#aaaaaa] text-[14px] flex-1 truncate font-[450]">Points Farming
+                                Live</span>
+                            <span class="text-[#888888] text-[14px] pr-[3px]">7</span>
+                        </div>
+
+                        <!-- High Volatility -->
+                        <div class="flex items-center py-1.5 px-2 cursor-pointer hover:bg-[#1f1f1f] rounded-[6px]">
+                            <div class="w-5 flex-shrink-0 flex items-center justify-center -ml-[5px]">
+                                <svg class="w-3 h-3 text-[#555555]" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
+                                </svg>
+                            </div>
+                            <div class="checkbox-custom checkbox-unchecked mr-[12px] flex-shrink-0"></div>
+                            <span class="text-[#aaaaaa] text-[14px] flex-1 truncate font-[450]">High Volatility</span>
+                            <span class="text-[#888888] text-[14px] pr-[3px]">18</span>
+                        </div>
+                    </div>
+
+                    <!-- ROOT: Options -->
+                    <div
+                        class="flex items-center py-1.5 px-[6px] cursor-pointer hover:bg-[#1f1f1f] rounded-[6px] mt-0.5">
+                        <div class="w-5 flex-shrink-0 flex items-center justify-center">
+                            <svg class="w-3 h-3 text-[#555555]" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
+                            </svg>
+                        </div>
+                        <div class="checkbox-custom checkbox-unchecked mr-[12px] flex-shrink-0"></div>
+                        <span class="text-[#aaaaaa] text-[14px] flex-1 truncate font-[450]">Options</span>
+                        <span class="text-[#888888] text-[14px] pr-2">42</span>
+                    </div>
+
+                    <!-- ROOT: Spot Only -->
+                    <div class="flex items-center py-1.5 px-[6px] cursor-pointer hover:bg-[#1f1f1f] rounded-[6px]">
+                        <div class="w-5 flex-shrink-0 flex items-center justify-center">
+                            <svg class="w-3 h-3 text-[#555555]" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
+                            </svg>
+                        </div>
+                        <div class="checkbox-custom checkbox-unchecked mr-[12px] flex-shrink-0"></div>
+                        <span class="text-[#aaaaaa] text-[14px] flex-1 truncate font-[450]">Spot Only</span>
+                        <span class="text-[#888888] text-[14px] pr-2">110</span>
+                    </div>
+
+                    <!-- ROOT: No Active Market -->
+                    <div class="flex items-center py-1.5 px-[6px] cursor-pointer hover:bg-[#1f1f1f] rounded-[6px]">
+                        <div class="w-5 flex-shrink-0 flex items-center justify-center">
+                            <svg class="w-3 h-3 text-[#555555]" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" />
+                            </svg>
+                        </div>
+                        <div class="checkbox-custom checkbox-unchecked mr-[12px] flex-shrink-0"></div>
+                        <span class="text-[#aaaaaa] text-[14px] flex-1 truncate font-[450]">No Active Market</span>
+                        <span class="text-[#888888] text-[14px] pr-2">18</span>
+                    </div>
+
+                </div>
+            </aside>
+
+            <!-- Main Workspace Area -->
+            <main class="flex-1 flex flex-col min-w-0 bg-app relative border-l border-[#222222]">
+
+                <!-- Tab Row representing open notebook files -->
+                <div
+                    class="flex h-12 bg-tab-bar border-b border-[#222222] overflow-x-auto custom-scrollbar items-end pl-6 gap-[2px] flex-shrink-0">
+
+                    <!-- Active Tab -->
+                    <div
+                        class="flex items-center h-[36px] px-4 rounded-t-lg bg-app border-t border-l border-r border-[#222222] border-b-0 text-active cursor-pointer gap-2 min-w-[180px] relative z-10 bottom-[-1px]">
+                        <svg class="w-3.5 h-3.5 text-[#fce454]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-[12px] font-medium truncate flex-1">Open-Interest.md</span>
+                        <button
+                            class="w-5 h-5 flex items-center justify-center rounded-md hover:bg-[#333] text-dim hover:text-active">×</button>
+                    </div>
+
+                    <!-- Inactive Tab 1 -->
+                    <div
+                        class="flex items-center h-[36px] px-4 rounded-t-lg bg-[#1a1a1a] border border-transparent hover:bg-[#222] text-dim hover:text-active cursor-pointer gap-2 min-w-[180px] border-b border-[#222222]">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-[12px] font-medium truncate flex-1">Funding-Rates.md</span>
+                        <button
+                            class="w-5 h-5 flex items-center justify-center rounded-md hover:bg-[#333] opacity-0 hover:opacity-100">×</button>
+                    </div>
+
+                    <!-- Inactive Tab 2 -->
+                    <div
+                        class="flex items-center h-[36px] px-4 rounded-t-lg bg-[#1a1a1a] border border-transparent hover:bg-[#222] text-dim hover:text-active cursor-pointer gap-2 min-w-[180px] border-b border-[#222222]">
+                        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-[12px] font-medium truncate flex-1">Strategy.md</span>
+                        <button
+                            class="w-5 h-5 flex items-center justify-center rounded-md hover:bg-[#333] opacity-0 hover:opacity-100">×</button>
+                    </div>
+
+                    <div class="border-b border-[#222222] h-full flex-1 flex items-end">
+                        <button
+                            class="w-8 h-[36px] flex items-center justify-center text-dim hover:text-active hover:bg-[#222] rounded-t-lg ml-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Content Area: Markdown Editor -->
+                <div class="flex-1 w-full bg-app overflow-hidden flex flex-col pt-1">
+                    <div
+                        class="w-full h-full flex-1 border-none [&>.CodeMirror]:h-[calc(100vh-220px)] sm:[&>.CodeMirror]:h-full">
+                        <textarea id="markdown-editor"># Open Interest
+
+## Market Overview
+The Open Interest in Perpetuals has spiked significantly over the last 24h.
+
+- **Current Status**: Normal
+- **Active Participants**: 5,000+
+
+```python
+def check_open_interest(market):
+    if market.open_interest > THRESHOLD:
+        return "High Volatility Expected"
+    return "Stable"
+```
+
+> **Note:** Watch out for sudden shifts in funding rates concurrently.
+</textarea>
+                    </div>
+                </div>
+
+            </main>
+        </div><!-- End App Content Row -->
+    </div>
+
+    <script>
+        // Initialize SimpleMDE on the textarea to create a functional markdown editor
+        var simplemde = new SimpleMDE({
+            element: document.getElementById("markdown-editor"),
+            toolbar: false,
+            status: false,
+            spellChecker: false
+        });
+
+        // Toggle folder visibility in the sidebar
+        function toggleFolder(element) {
+            // Find the arrow icon container
+            const iconContainer = element.querySelector('.arrow-icon');
+
+            // Find the next sibling element which is the children container
+            const childrenContainer = element.nextElementSibling;
+
+            if (childrenContainer && childrenContainer.classList.contains('folder-content')) {
+                // Toggle display
+                if (childrenContainer.style.display === 'none') {
+                    childrenContainer.style.display = 'block';
+                    if (iconContainer) iconContainer.style.transform = 'rotate(0deg)';
+                } else {
+                    childrenContainer.style.display = 'none';
+                    if (iconContainer) iconContainer.style.transform = 'rotate(-90deg)';
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

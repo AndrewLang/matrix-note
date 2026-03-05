@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>electoNeek DevTool 2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1e212b;
+            overflow: hidden;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #343b4f;
+            border-radius: 10px;
+        }
+
+        .bg-main-dark {
+            background-color: #1a1c24;
+        }
+
+        .bg-panel {
+            background-color: #212530;
+        }
+
+        .bg-canvas {
+            background-color: #262a35;
+        }
+
+        .bg-canvas-grid {
+            background-image: radial-gradient(#394052 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+
+        .text-dim {
+            color: #6e7687;
+        }
+
+        .text-normal {
+            color: #9da5b4;
+        }
+
+        .text-active {
+            color: #d7dae0;
+        }
+
+        .border-color {
+            border-color: #2f3545;
+        }
+
+        .node-path {
+            stroke: #4f5870;
+            stroke-width: 1.5px;
+            fill: none;
+            stroke-dasharray: 4;
+        }
+
+        .node-arrow {
+            fill: #4f5870;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col h-screen text-[13px] text-normal bg-[#1e212b] selection:bg-blue-500/30">
+
+    <!-- Title Bar -->
+    <div class="h-8 flex items-center justify-between px-3 bg-[#1e212b] flex-shrink-0 select-none">
+        <div class="flex items-center gap-2 text-active text-[11px] font-medium opacity-90 pl-1">
+            <div
+                class="w-3.5 h-3.5 bg-[#00e676] rounded-[3px] text-black font-bold flex items-center justify-center text-[9px] italic">
+                e</div>
+            <span>electoNeek DevTool 2.0</span>
+        </div>
+        <div class="flex items-center gap-4 text-dim opacity-70">
+            <button class="hover:text-active"><svg class="w-3 h-3" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                </svg></button>
+            <button class="hover:text-active"><svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                </svg></button>
+            <button class="hover:text-active"><svg class="w-3 h-3" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg></button>
+        </div>
+    </div>
+
+    <!-- Toolbar & Tabs Row -->
+    <div class="flex h-12 bg-main-dark border-b border-color flex-shrink-0">
+
+        <!-- Left Toolbar (Matches Sidebar Width) -->
+        <div class="w-[260px] flex items-center px-4 justify-between border-r border-color">
+            <!-- Action Icons -->
+            <div class="flex items-center gap-3.5 text-dim">
+                <button class="hover:text-active text-[16px] font-light leading-none">+</button>
+                <button class="hover:text-active"><svg class="w-4 h-4" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg></button>
+                <button class="hover:text-active"><svg class="w-4 h-4" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4">
+                        </path>
+                    </svg></button>
+                <button class="hover:text-active text-[15px] leading-none mb-0.5">›</button>
+            </div>
+            <!-- Play/Pause Green Icons -->
+            <div class="flex items-center gap-2">
+                <button
+                    class="w-5 h-5 rounded-full bg-[#00e676] flex items-center justify-center text-black text-[9px] pl-[1.5px]">▶</button>
+                <button
+                    class="w-5 h-5 rounded-full bg-[#00e676] flex items-center justify-center text-black text-[9px]">▶‖</button>
+                <button
+                    class="w-5 h-5 rounded-full bg-[#00e676] flex items-center justify-center text-black text-[8px]">■</button>
+            </div>
+        </div>
+
+        <!-- Center Tabs -->
+        <div class="flex-1 flex px-2 overflow-x-auto custom-scrollbar items-end h-full">
+            <div
+                class="flex items-center h-[38px] px-3 rounded-t-lg bg-panel border-t border-l border-r border-color text-dim hover:text-active cursor-pointer gap-2 min-w-[140px] border-b-0 relative z-10 -mr-2">
+                <button class="opacity-50 hover:opacity-100 hover:text-white mb-0.5">×</button>
+                <span class="truncate text-[11px]">New file</span>
+            </div>
+            <div
+                class="flex items-center h-[38px] px-3 rounded-t-lg bg-main-dark border-t border-l border-r border-transparent text-dim hover:text-active cursor-pointer gap-2 min-w-[140px] relative z-0">
+                <button class="opacity-50 hover:opacity-100 hover:text-white mb-0.5">×</button>
+                <span class="truncate text-[11px]">enslaveTheWorld</span>
+            </div>
+            <div
+                class="flex items-center h-[38px] px-3 rounded-t-lg bg-main-dark border-t border-l border-r border-transparent text-dim hover:text-active cursor-pointer gap-2 min-w-[140px] relative z-0">
+                <button class="opacity-50 hover:opacity-100 hover:text-white mb-0.5">×</button>
+                <span class="truncate text-[11px]">awesome_tab</span>
+            </div>
+            <div
+                class="flex items-center h-[38px] px-3 rounded-t-lg bg-main-dark border-t border-l border-r border-transparent text-dim hover:text-active cursor-pointer gap-2 min-w-[140px] relative z-0">
+                <button class="opacity-50 hover:opacity-100 hover:text-white mb-0.5">×</button>
+                <span class="truncate text-[11px]">another awesom...</span>
+            </div>
+            <div
+                class="flex items-center h-[38px] px-3 rounded-t-lg bg-main-dark border-t border-l border-r border-transparent text-dim hover:text-active cursor-pointer gap-2 min-w-[140px] relative z-0">
+                <button class="opacity-50 hover:opacity-100 hover:text-white mb-0.5">×</button>
+                <span class="truncate text-[11px]">helloworld</span>
+            </div>
+        </div>
+
+        <!-- Right Tools -->
+        <div class="flex items-center px-4 gap-5 text-dim flex-shrink-0">
+            <button class="hover:text-active text-[14px]">⋮</button>
+            <div class="flex gap-2 text-[10px] font-medium opacity-90">
+                <span class="text-[#00e676] cursor-pointer">EN</span>
+                <span class="cursor-pointer hover:text-[#00e676]">RU</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="hover:text-active"><svg class="w-4 h-4" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg></button>
+                <div class="w-6 h-6 flex items-center justify-center text-[#00e676] text-[15px] italic font-bold">@
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="flex flex-1 overflow-hidden">
+
+        <!-- Left Sidebar -->
+        <aside class="w-[260px] flex flex-col bg-panel border-r border-color flex-shrink-0">
+            <div class="p-3">
+                <div class="relative">
+                    <input type="text" placeholder="Functions"
+                        class="w-full bg-[#161821] border border-[#2f3545] rounded-sm px-3 py-1.5 text-[11px] text-active placeholder-dim focus:outline-none focus:border-[#4f5870]" />
+                    <svg class="absolute right-2.5 top-2 w-3.5 h-3.5 text-dim" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar px-2 pb-4 space-y-1 select-none mt-1">
+                <!-- Basic -->
+                <div>
+                    <div
+                        class="flex items-center gap-2 px-2 py-1.5 text-[10px] font-medium text-active tracking-wide cursor-pointer hover:bg-[#2c3242] rounded transition-colors group">
+                        <svg class="w-[10px] h-[10px] opacity-80 group-hover:opacity-100" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        Basic
+                    </div>
+                    <div class="mt-1 space-y-[2px] ml-[11px] border-l border-[#2f3545] pl-2">
+                        <div
+                            class="flex items-center gap-3 px-3 py-[7px] hover:bg-[#2a303f] rounded cursor-pointer text-[11px] text-dim transition-colors group">
+                            <span class="w-4 text-center opacity-70 group-hover:opacity-100">⋈</span>
+                            <span>If...then</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-3 px-3 py-[7px] hover:bg-[#2a303f] rounded cursor-pointer text-[11px] text-dim transition-colors group">
+                            <span class="w-4 text-center opacity-70 group-hover:opacity-100">↻</span>
+                            <span>Do-while loop</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-3 px-3 py-[7px] bg-[#2a303f] border-l-2 border-blue-500 rounded-r cursor-pointer text-[11px] text-active -ml-[9px] pl-[10px]">
+                            <span class="w-4 text-center text-blue-400">⟨/⟩</span>
+                            <span>Assign value to variable</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-3 px-3 py-[7px] hover:bg-[#2a303f] rounded cursor-pointer text-[11px] text-dim transition-colors group">
+                            <span class="w-4 text-center opacity-70 group-hover:opacity-100">✓</span>
+                            <span>Execute js code</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-3 px-3 py-[7px] hover:bg-[#2a303f] rounded cursor-pointer text-[11px] text-dim transition-colors group">
+                            <span class="w-4 text-center opacity-70 group-hover:opacity-100">⏱</span>
+                            <span>Delay</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-3 px-3 py-[7px] hover:bg-[#2a303f] rounded cursor-pointer text-[11px] text-dim transition-colors group">
+                            <span class="w-4 text-center opacity-70 group-hover:opacity-100">↹</span>
+                            <span>Subprogram</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-3 px-3 py-[7px] hover:bg-[#2a303f] rounded cursor-pointer text-[11px] text-dim transition-colors group">
+                            <span class="w-4 text-center opacity-70 group-hover:opacity-100">≡</span>
+                            <span>Log</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-3 px-3 py-[7px] hover:bg-[#2a303f] rounded cursor-pointer text-[11px] text-dim transition-colors group">
+                            <span class="w-4 text-center opacity-70 group-hover:opacity-100">☑</span>
+                            <span>ToDo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Others -->
+                <div class="pt-2">
+                    <div
+                        class="flex items-center gap-2 px-2 py-1.5 text-[10px] font-medium text-dim tracking-wide cursor-pointer hover:bg-[#2a303f] rounded transition-colors group">
+                        <svg class="w-[10px] h-[10px] -rotate-90 opacity-80 group-hover:opacity-100" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        Extensions
+                    </div>
+                </div>
+                <div>
+                    <div
+                        class="flex items-center gap-2 px-2 py-1.5 text-[10px] font-medium text-dim tracking-wide cursor-pointer hover:bg-[#2a303f] rounded transition-colors group">
+                        <svg class="w-[10px] h-[10px] -rotate-90 opacity-80 group-hover:opacity-100" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        Interface elements
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center Area -->
+        <main class="flex-1 flex flex-col bg-canvas min-w-0 relative">
+            <div class="flex-1 relative overflow-hidden bg-canvas bg-canvas-grid border-b border-color">
+                <!-- SVG Connections -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
+                    <path d="M 400 65 L 400 100" class="node-path" />
+                    <polygon points="397,95 403,95 400,100" class="node-arrow" />
+
+                    <path d="M 410 160 L 410 200" class="node-path" />
+                    <path d="M 390 250 L 320 250 L 320 280" class="node-path" />
+                    <path d="M 430 250 L 530 250 L 530 200" class="node-path" />
+                    <path d="M 320 320 L 320 360" class="node-path" />
+                    <path d="M 530 160 L 530 120 L 650 120 L 650 300" class="node-path" />
+                </svg>
+
+                <div
+                    class="absolute inset-0 overflow-auto custom-scrollbar p-10 flex justify-center z-10 w-full h-full">
+                    <div class="relative w-[800px] h-[600px] flex justify-center pt-8 transform scale-95 origin-top">
+
+                        <!-- Start Node bg-[#2c9a62]-->
+                        <div
+                            class="absolute top-[20px] bg-panel rounded-full w-9 h-9 border border-[#00e676] flex items-center justify-center text-[#00e676] text-[10px] font-bold shadow-lg shadow-black/20">
+                            Start
+                            <div class="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full border border-[#00e676] bg-panel">
+                            </div>
+                        </div>
+
+                        <!-- Assign Value Node -->
+                        <div
+                            class="absolute top-[90px] w-64 bg-[#394268] rounded shadow-lg shadow-black/30 flex overflow-hidden group cursor-pointer border border-[#4b557a]">
+                            <div class="w-10 bg-[#424d77] flex items-center justify-center text-blue-300">⟨/⟩</div>
+                            <div class="flex-1 p-2 bg-[#424d77]">
+                                <div class="text-[9px] text-blue-200 mb-1">/* comment */</div>
+                                <div class="text-[10px] font-mono text-white">x = ({name: "ivan", surname: "malcev"})
+                                </div>
+                            </div>
+                            <div
+                                class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full border border-blue-400 bg-[#293252]">
+                            </div>
+                            <div
+                                class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full border border-[#4b557a] bg-[#293252]">
+                            </div>
+                        </div>
+
+                        <!-- If condition -->
+                        <div
+                            class="absolute top-[180px] left-[340px] w-[140px] bg-[#c45a33] rounded shadow-lg shadow-black/30 flex px-1 py-1 cursor-pointer border border-[#d66a43]">
+                            <div
+                                class="w-6 flex flex-col items-center justify-center text-white/80 border-r border-[#d66a43] mr-1">
+                                <span class="text-[12px]">⋈</span>
+                            </div>
+                            <div class="flex-1 px-1 py-1 text-center">
+                                <div class="text-[9px] text-white/70">/* comment */</div>
+                                <div class="text-[10px] font-medium text-white mb-1">If condition</div>
+                                <div class="flex justify-between px-2 w-full text-[9px] font-bold">
+                                    <span class="text-[#00e676]">Yes</span>
+                                    <span class="text-red-400">No</span>
+                                </div>
+                            </div>
+                            <div
+                                class="absolute -bottom-1.5 left-7 w-2 h-2 rounded-full border border-[#00e676] bg-[#c45a33]">
+                            </div>
+                            <div
+                                class="absolute -bottom-1.5 right-7 w-2 h-2 rounded-full border border-red-400 bg-[#c45a33]">
+                            </div>
+                            <div
+                                class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full border border-[#c45a33] bg-[#293252]">
+                            </div>
+                        </div>
+
+                        <!-- Recognize Text -->
+                        <div
+                            class="absolute top-[170px] left-[520px] w-48 bg-[#d64141] rounded shadow-lg flex items-stretch p-0.5 border border-[#e85353] cursor-pointer">
+                            <div
+                                class="w-8 flex items-center justify-center text-white bg-black/10 rounded-l rounded-r-[1px]">
+                                <span class="text-[14px]">🔍</span>
+                            </div>
+                            <div class="flex-1 px-2 flex items-center text-[10px] font-medium text-white">Recognize
+                                Google</div>
+                            <div
+                                class="bg-white rounded px-2 flex items-center text-black font-bold text-[10px] m-[2px]">
+                                Google</div>
+                            <div
+                                class="absolute -bottom-1.5 left-1/2 w-2 h-2 rounded-full border border-[#d64141] bg-[#293252]">
+                            </div>
+                            <div
+                                class="absolute -left-1.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border border-[#d64141] bg-[#293252]">
+                            </div>
+                        </div>
+
+                        <!-- Delay -->
+                        <div
+                            class="absolute top-[280px] left-[420px] w-32 bg-[#2cbab2] rounded shadow-lg flex p-1 border border-[#3ccac2] cursor-pointer">
+                            <div class="w-7 flex items-center justify-center text-white bg-black/10 rounded-sm">⏱</div>
+                            <div class="flex-1 flex flex-col justify-center px-2">
+                                <div class="text-[9px] text-white/70">/* comment */</div>
+                                <div class="text-[10px] font-medium text-white">Delay</div>
+                            </div>
+                            <div
+                                class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full border border-[#2cbab2] bg-[#293252]">
+                            </div>
+                            <div
+                                class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full border border-[#2cbab2] bg-[#293252]">
+                            </div>
+                        </div>
+
+                        <!-- Execute JS -->
+                        <div
+                            class="absolute top-[280px] left-[260px] w-32 bg-[#e8a32a] rounded shadow-lg flex p-1 border border-[#f8b33a] cursor-pointer">
+                            <div class="w-7 flex items-center justify-center text-white bg-black/10 rounded-sm">✓</div>
+                            <div class="flex-1 flex items-center px-2 text-[10px] font-medium text-white py-1">Execute
+                                js code</div>
+                            <div
+                                class="absolute -bottom-1.5 left-1/2 w-2 h-2 rounded-full border border-[#e8a32a] bg-[#293252]">
+                            </div>
+                            <div
+                                class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full border border-[#e8a32a] bg-[#293252]">
+                            </div>
+                        </div>
+
+                        <!-- Second Execute JS -->
+                        <div
+                            class="absolute top-[350px] left-[420px] w-32 bg-[#e8a32a] rounded shadow-lg flex p-1 border border-[#f8b33a] cursor-pointer">
+                            <div class="w-7 flex items-center justify-center text-white bg-black/10 rounded-sm">✓</div>
+                            <div class="flex-1 flex items-center px-2 text-[10px] font-medium text-white py-1">Execute
+                                js code</div>
+                            <div
+                                class="absolute -bottom-1.5 left-1/2 w-2 h-2 rounded-full border border-[#e8a32a] bg-[#293252]">
+                            </div>
+                            <div
+                                class="absolute -top-1.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full border border-[#e8a32a] bg-[#293252]">
+                            </div>
+                        </div>
+
+                        <!-- Assign (Bottom) -->
+                        <div
+                            class="absolute top-[350px] left-[240px] w-40 bg-[#292e42] border border-dashed border-[#4f5870] rounded shadow-lg flex p-1 cursor-pointer">
+                            <div class="px-2 py-1 flex items-center gap-2 w-full text-[10px] text-white opacity-80">
+                                <span class="text-blue-400">⟨/⟩</span>
+                                <span>Assign variable</span>
+                            </div>
+                        </div>
+
+                        <!-- Log -->
+                        <div
+                            class="absolute top-[350px] left-[590px] w-16 bg-[#69bf41] rounded shadow-lg flex p-1 border border-[#79cf51] cursor-pointer">
+                            <div class="w-6 flex items-center justify-center text-white bg-black/10 rounded-sm">≡</div>
+                            <div class="flex-1 flex items-center px-1 text-[10px] font-medium text-white py-1">Log</div>
+                            <div
+                                class="absolute -bottom-1.5 left-1/2 w-2 h-2 rounded-full border border-[#69bf41] bg-[#293252]">
+                            </div>
+                            <div
+                                class="absolute -left-1.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border border-[#d64141] bg-[#293252]">
+                            </div>
+                        </div>
+
+                        <!-- Finish Node -->
+                        <div
+                            class="absolute top-[430px] left-[370px] bg-panel rounded-full w-9 h-9 border border-[#00e676] flex items-center justify-center text-[#00e676] text-[10px] font-bold shadow-lg">
+                            Finish
+                            <div class="absolute -top-1.5 w-1.5 h-1.5 rounded-full border border-[#00e676] bg-panel">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Console -->
+            <div class="h-36 bg-panel border-t border-color flex flex-col flex-shrink-0">
+                <div class="flex items-center justify-between px-3 py-1.5 border-b border-color text-[11px]">
+                    <div class="flex items-center gap-2 text-dim font-semibold uppercase tracking-widest text-[10px]">
+                        Console
+                    </div>
+                    <div class="flex items-center gap-3 text-dim">
+                        <button class="hover:text-active"><svg class="w-3.5 h-3.5 opacity-70" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                </path>
+                            </svg></button>
+                        <button class="hover:text-active"><svg class="w-3.5 h-3.5 opacity-70" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <rect x="4" y="10" width="16" height="4" rx="1" />
+                            </svg></button>
+                        <button class="hover:text-active"><svg class="w-3 h-3 opacity-70" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor">
+                                <rect x="4" y="4" width="16" height="16" rx="2" stroke-width="2" />
+                            </svg></button>
+                    </div>
+                </div>
+                <div
+                    class="p-3 overflow-y-auto custom-scrollbar font-mono text-[10px] space-y-1.5 select-text bg-panel pl-4">
+                    <div class="flex gap-3 group">
+                        <span class="text-red-400 opacity-80 shrink-0 w-[140px]">ⓘ 11.09.2019, 17:23:46</span>
+                        <span class="text-red-400">Error</span>
+                    </div>
+                    <div class="flex gap-3 group">
+                        <span class="text-[#00e676] opacity-80 shrink-0 w-[140px]">ⓘ 11.09.2019, 17:23:46</span>
+                        <span class="text-[#00e676]">Task finished successfully</span>
+                    </div>
+                    <div class="flex gap-3 group">
+                        <span class="text-orange-300 opacity-80 shrink-0 w-[140px]">ⓘ 11.09.2019, 17:23:46</span>
+                        <span class="text-orange-300">Something wrong</span>
+                    </div>
+                    <div class="flex gap-3 group">
+                        <span class="text-[#00e676] opacity-80 shrink-0 w-[140px]">ⓘ 11.09.2019, 17:23:46</span>
+                        <span class="text-[#00e676]">Sequence completed</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="w-[280px] bg-panel border-l border-color flex flex-col flex-shrink-0">
+            <div class="flex h-12 border-b border-[#2f3545] bg-[#1e212b] px-2 gap-1 items-end">
+                <button
+                    class="flex-1 py-[10px] bg-panel border-t-[3px] border-blue-500 text-active text-[11px] font-medium truncate px-2 relative z-10 shadow-[0_-2px_4px_rgba(0,0,0,0.1)] rounded-t">Properties</button>
+                <button
+                    class="flex-1 py-[10px] text-dim border-t-[3px] border-transparent text-[11px] hover:text-active hover:bg-[#262a35] truncate px-2 rounded-t mb-[1px]">Variables</button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-7">
+                <!-- Connect sections -->
+                <div class="space-y-4">
+                    <div class="flex items-center text-dim hover:text-active cursor-pointer group">
+                        <svg class="w-[10px] h-[10px] group-hover:text-active transition-transform -rotate-90 mr-2 opacity-80"
+                            fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-[11px]">Method <span class="text-red-400">*</span></span>
+                    </div>
+                    <div class="flex items-center text-dim hover:text-active cursor-pointer group">
+                        <svg class="w-[10px] h-[10px] group-hover:text-active transition-transform -rotate-90 mr-2 opacity-80"
+                            fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-[11px]">Autorization header</span>
+                    </div>
+                    <div class="flex items-center text-dim hover:text-active cursor-pointer group">
+                        <svg class="w-[10px] h-[10px] group-hover:text-active transition-transform -rotate-90 mr-2 opacity-80"
+                            fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="text-[11px]">Query parameters</span>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center text-active cursor-pointer mb-3">
+                            <svg class="w-[10px] h-[10px] transition-transform mr-2 opacity-90" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-[11px] font-medium">Body parameters</span>
+                        </div>
+                        <div class="pl-4 space-y-2.5">
+                            <label class="flex items-center gap-2.5 text-[11px] text-active cursor-pointer">
+                                <div
+                                    class="w-3 h-3 rounded-full border border-blue-500 flex items-center justify-center">
+                                    <div class="w-[6px] h-[6px] rounded-full bg-[#00e676]"></div>
+                                </div>
+                                <span class="opacity-90">Save the previous step result</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 text-[11px] text-dim cursor-pointer">
+                                <div class="w-3 h-3 rounded-full border border-[#4f5870]"></div>
+                                <span>Calculate a value</span>
+                            </label>
+                            <div class="mt-3">
+                                <input type="text" placeholder="URL"
+                                    class="w-full bg-[#292f3f] border border-[#394255] rounded-[3px] px-3 py-1.5 text-[11px] text-active focus:border-[#4f5870] outline-none" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Send file -->
+                <div>
+                    <div class="flex items-center text-active cursor-pointer mb-3">
+                        <span class="text-[11px] font-medium">Send file</span>
+                    </div>
+                    <div class="pl-0 space-y-2.5">
+                        <label class="flex items-center gap-2.5 text-[11px] text-active cursor-pointer">
+                            <div class="w-3 h-3 rounded-full border border-[#00e676] flex items-center justify-center">
+                                <div class="w-[6px] h-[6px] rounded-full bg-[#00e676]"></div>
+                            </div>
+                            <span class="opacity-90">Set a value</span>
+                        </label>
+                        <label class="flex items-center gap-2.5 text-[11px] text-dim cursor-pointer">
+                            <div class="w-3 h-3 rounded-full border border-[#4f5870]"></div>
+                            <span>Save the previous step result</span>
+                        </label>
+                        <label class="flex items-center gap-2.5 text-[11px] text-dim cursor-pointer">
+                            <div class="w-3 h-3 rounded-full border border-[#4f5870]"></div>
+                            <span>Calculate a value</span>
+                        </label>
+                    </div>
+                    <div class="mt-3 flex gap-2">
+                        <input type="text" placeholder="Path to file"
+                            class="flex-1 bg-[#292f3f] border border-[#394255] rounded-[3px] px-3 py-1.5 text-[11px] outline-none" />
+                        <button
+                            class="bg-[#00e676] hover:bg-[#00c968] text-black px-4 py-1.5 rounded-[3px] text-[11px] font-medium transition-colors">Choose</button>
+                    </div>
+                </div>
+
+
+                <!-- Input name -->
+                <div>
+                    <div class="flex items-center text-active cursor-pointer mb-3">
+                        <span class="text-[11px] font-medium">Input name</span>
+                    </div>
+                    <div class="pl-0 space-y-2.5">
+                        <label class="flex items-center gap-2.5 text-[11px] text-active cursor-pointer">
+                            <div class="w-3 h-3 rounded-full border border-[#00e676] flex items-center justify-center">
+                                <div class="w-[6px] h-[6px] rounded-full bg-[#00e676]"></div>
+                            </div>
+                            <span class="opacity-90">Set a value</span>
+                        </label>
+                        <label class="flex items-center gap-2.5 text-[11px] text-dim cursor-pointer">
+                            <div class="w-3 h-3 rounded-full border border-[#4f5870]"></div>
+                            <span>Save the previous step result</span>
+                        </label>
+                        <label class="flex items-center gap-2.5 text-[11px] text-dim cursor-pointer">
+                            <div class="w-3 h-3 rounded-full border border-[#4f5870]"></div>
+                            <span>Calculate a value</span>
+                        </label>
+                    </div>
+                    <div class="mt-3 space-y-2">
+                        <input type="text" placeholder="Input name"
+                            class="w-full bg-[#292f3f] border border-[#394255] rounded-[3px] px-3 py-1.5 text-[11px] outline-none placeholder-dim" />
+                        <textarea placeholder="Comment" rows="2"
+                            class="w-full bg-[#292f3f] border border-[#394255] rounded-[3px] px-3 py-1.5 text-[11px] resize-none outline-none placeholder-dim"></textarea>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+    </div>
+
+</body>
+
+</html>
