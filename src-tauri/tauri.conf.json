@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/dev/tooling/cli/schema.json",
+  "productName": "Matrix Notebook",
+  "version": "0.1.0",
+  "identifier": "com.matrix.notebook",
+  "build": {
+    "beforeDevCommand": "npm run start:web",
+    "beforeBuildCommand": "npm run build:web",
+    "frontendDist": "../dist/matrix-notebook",
+    "devUrl": "http://localhost:4200"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline';"
+    },
+    "windows": [
+      {
+        "title": "Matrix Notebook",
+        "width": 1280,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ]
+  }
+}

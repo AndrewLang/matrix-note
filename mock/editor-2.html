@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Note</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Unified Smooth Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        html.dark ::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        html.dark ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Glassmorphism utility classes */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+
+        html.dark .glass-container {
+            background: rgba(30, 30, 35, 0.75);
+            /* restored depth and contrast */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.2);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        html.dark .glass-panel {
+            background: rgba(0, 0, 0, 0.25);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .glass-tab-active {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-bottom: none;
+        }
+
+        html.dark .glass-tab-active {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: none;
+        }
+
+        /* SimpleMDE Overrides for transparent integration */
+        .editor-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 8px 16px !important;
+            border: none !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+            background: transparent;
+        }
+
+        html.dark .editor-toolbar {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .editor-toolbar a {
+            color: inherit !important;
+            border: none !important;
+            border-radius: 6px !important;
+            width: 30px !important;
+            height: 30px !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .editor-toolbar a:hover,
+        .editor-toolbar a.active {
+            background: rgba(0, 0, 0, 0.08) !important;
+        }
+
+        html.dark .editor-toolbar a:hover,
+        html.dark .editor-toolbar a.active {
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .editor-toolbar i.separator {
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            margin: 0 4px;
+        }
+
+        html.dark .editor-toolbar i.separator {
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .editor-statusbar {
+            display: none;
+        }
+
+        .CodeMirror {
+            background: transparent !important;
+            color: inherit !important;
+            border: none !important;
+            padding: 16px 32px;
+            /* Inner padding */
+            font-size: 15px;
+            line-height: 1.7;
+            height: calc(100% - 47px) !important;
+            /* height minus toolbar */
+            outline: none !important;
+        }
+
+        /* Syntax colors */
+        .CodeMirror-cursor {
+            border-left: 2px solid #0f172a !important;
+        }
+
+        html.dark .CodeMirror-cursor {
+            border-left: 2px solid #f8fafc !important;
+        }
+
+        .cm-header-1 {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .cm-header-2 {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .cm-header {
+            color: #374151;
+            font-weight: 500;
+        }
+
+        html.dark .cm-header-1 {
+            color: #f9fafb;
+        }
+
+        html.dark .cm-header-2 {
+            color: #f3f4f6;
+        }
+
+        html.dark .cm-header {
+            color: #e5e7eb;
+        }
+
+        .cm-link {
+            color: #3b82f6 !important;
+            text-decoration: none !important;
+        }
+
+        .cm-url {
+            color: #6b7280 !important;
+        }
+
+        html.dark .cm-link {
+            color: #60a5fa !important;
+        }
+
+        html.dark .cm-url {
+            color: #9ca3af !important;
+        }
+
+        .CodeMirror-selected {
+            background: rgba(59, 130, 246, 0.2) !important;
+        }
+
+        html.dark .CodeMirror-selected {
+            background: rgba(96, 165, 250, 0.25) !important;
+        }
+
+        /* Folders animation */
+        .folder-icon {
+            transition: transform 0.2s ease;
+        }
+
+        .folder-open .folder-icon {
+            transform: rotate(90deg);
+        }
+
+        /* Sidebar Collapse Styles */
+        #app-sidebar {
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s;
+        }
+
+        .sidebar-collapsed {
+            width: 60px !important;
+        }
+
+        .sidebar-collapsed .truncate,
+        .sidebar-collapsed .profile-text {
+            display: none;
+        }
+
+        .sidebar-collapsed .folder-icon,
+        .sidebar-collapsed .folder-content {
+            display: none !important;
+        }
+
+        .sidebar-collapsed .folder-group>div {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+            margin-top: 4px;
+        }
+
+        .sidebar-collapsed .main-icon {
+            margin-right: 0 !important;
+            width: 18px;
+            height: 18px;
+        }
+
+        .sidebar-collapsed .profile-container {
+            justify-content: center;
+            padding: 12px 0;
+            margin: 8px 4px;
+        }
+
+        /* Settings Modal */
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-window {
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+
+        .modal-backdrop.show .modal-window {
+            transform: scale(1);
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body
+    class="flex items-center justify-center p-8 h-screen text-gray-800 dark:text-gray-100 transition-colors duration-500 relative bg-slate-200 dark:bg-zinc-900">
+
+    <!-- Aesthetic Animated Background -->
+    <div class="absolute inset-0 overflow-hidden z-0 pointer-events-none">
+        <!-- Light Mode Shapes -->
+        <div
+            class="dark:hidden absolute -top-[20%] -left-[10%] w-[60vw] h-[60vw] rounded-full bg-blue-300/30 blur-[100px] mix-blend-multiply">
+        </div>
+        <div
+            class="dark:hidden absolute top-[10%] -right-[10%] w-[50vw] h-[50vw] rounded-full bg-indigo-300/30 blur-[100px] mix-blend-multiply">
+        </div>
+        <div
+            class="dark:hidden absolute -bottom-[20%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-purple-300/30 blur-[100px] mix-blend-multiply">
+        </div>
+
+        <!-- Dark Mode Shapes -->
+        <div
+            class="hidden dark:block absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-indigo-600/20 blur-[120px] mix-blend-screen">
+        </div>
+        <div
+            class="hidden dark:block absolute top-[20%] -right-[10%] w-[40vw] h-[40vw] rounded-full bg-purple-600/15 blur-[120px] mix-blend-screen">
+        </div>
+        <div
+            class="hidden dark:block absolute -bottom-[10%] left-[10%] w-[50vw] h-[50vw] rounded-full bg-emerald-600/15 blur-[120px] mix-blend-screen">
+        </div>
+    </div>
+
+    <!-- Main Application Window -->
+    <div
+        class="w-full max-w-[1400px] h-full rounded-2xl overflow-hidden flex flex-col glass-container z-10 transition-all duration-500">
+
+        <!-- Windows-Style Titlebar (Glass) -->
+        <div
+            class="h-10 flex items-center justify-between flex-shrink-0 select-none w-full border-b border-black/5 dark:border-white/5 px-2">
+            <!-- App Name -->
+            <div class="flex items-center gap-3 pl-1 w-1/3">
+                <button id="sidebar-toggle"
+                    class="p-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors opacity-80 hover:opacity-100 flex-shrink-0">
+                    <svg class="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                    </path>
+                </svg>
+                <span class="text-xs tracking-wider font-semibold opacity-80 uppercase truncate">Matrix Note</span>
+            </div>
+
+            <!-- Centered Search -->
+            <div class="flex-1 flex justify-center h-full items-center">
+                <div
+                    class="flex items-center bg-black/5 dark:bg-white/5 rounded-md w-[300px] h-6 px-2.5 text-[11px] border border-transparent hover:border-black/10 dark:hover:border-white/10 transition-colors">
+                    <svg class="w-3 h-3 opacity-60 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" placeholder="Search files, contents..."
+                        class="bg-transparent border-none text-inherit focus:outline-none w-full placeholder-gray-500 dark:placeholder-gray-400">
+                </div>
+            </div>
+
+            <!-- Controls (Theme + Window) -->
+            <div class="flex h-full w-1/3 justify-end items-center">
+                <button id="settings-btn"
+                    class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors mr-1"
+                    title="Settings">
+                    <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+                <button id="theme-toggle"
+                    class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors mr-3"
+                    title="Toggle Theme">
+                    <!-- Sun (shows in dark mode) -->
+                    <svg class="hidden dark:block w-4 h-4 text-yellow-300" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                        </path>
+                    </svg>
+                    <!-- Moon (shows in light mode) -->
+                    <svg class="block dark:hidden w-4 h-4 text-indigo-500" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                        </path>
+                    </svg>
+                </button>
+
+                <!-- Window controls matching light/dark context cleanly -->
+                <button
+                    class="w-10 h-full flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+                    <svg class="w-2.5 h-2.5" stroke="currentColor" stroke-width="1.2" viewBox="0 0 10 10" fill="none">
+                        <path d="M 0 5 L 10 5" />
+                    </svg>
+                </button>
+                <button
+                    class="w-10 h-full flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+                    <svg class="w-2.5 h-2.5" stroke="currentColor" stroke-width="1.2" viewBox="0 0 10 10" fill="none">
+                        <path d="M 1 1 L 9 1 L 9 9 L 1 9 Z" />
+                    </svg>
+                </button>
+                <button
+                    class="w-10 h-full flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-red-500 hover:text-white transition-colors">
+                    <svg class="w-2.5 h-2.5" stroke="currentColor" stroke-width="1.2" viewBox="0 0 10 10" fill="none">
+                        <path d="M 1 1 L 9 9 M 9 1 L 1 9" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- App Body -->
+        <div class="flex-1 flex overflow-hidden">
+
+            <!-- Sidebar -->
+            <aside id="app-sidebar"
+                class="w-[260px] glass-panel flex flex-col flex-shrink-0 z-10 transition-all duration-300 overflow-hidden">
+
+                <!-- Tree View (No Tabs) -->
+                <div class="flex-1 overflow-y-auto pt-6 px-3 select-none text-sm custom-scrollbar">
+
+                    <!-- ROOT: Projects -->
+                    <div class="folder-group folder-open">
+                        <div class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-700 dark:text-gray-300 transition-colors"
+                            onclick="toggleFolderRecursive(this)">
+                            <svg class="w-3.5 h-3.5 opacity-60 mr-2 folder-icon shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <svg class="w-4 h-4 text-blue-500 mr-2.5 opacity-80 shrink-0 main-icon" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
+                            </svg>
+                            <span class="font-medium truncate">Projects</span>
+                        </div>
+
+                        <!-- Projects Children -->
+                        <div class="pl-[22px] mt-0.5 folder-content" style="display: block;">
+
+                            <!-- SubFolder: Aero Redesign -->
+                            <div class="folder-group folder-open">
+                                <div class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-700 dark:text-gray-300 transition-colors"
+                                    onclick="toggleFolderRecursive(this)">
+                                    <svg class="w-3.5 h-3.5 opacity-60 mr-2 folder-icon shrink-0" fill="currentColor"
+                                        viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    <svg class="w-4 h-4 text-sky-500 mr-2.5 opacity-80 shrink-0" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z">
+                                        </path>
+                                    </svg>
+                                    <span class="font-medium truncate">Aero Redesign</span>
+                                </div>
+
+                                <!-- Aero Children -->
+                                <div class="pl-[22px] mt-0.5 folder-content" style="display: block;">
+                                    <div
+                                        class="flex items-center px-1.5 py-1.5 rounded-md bg-black/5 dark:bg-white/10 cursor-pointer text-blue-600 dark:text-blue-400 transition-colors font-medium border border-black/5 dark:border-white/5">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                            </path>
+                                        </svg>
+                                        <span>Architecture.md</span>
+                                    </div>
+                                    <div
+                                        class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-600 dark:text-gray-400 transition-colors mt-0.5">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                            </path>
+                                        </svg>
+                                        <span>Design-System.md</span>
+                                    </div>
+                                    <div
+                                        class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-600 dark:text-gray-400 transition-colors mt-0.5">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z">
+                                            </path>
+                                        </svg>
+                                        <span>Assets/</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Subfolder: Backend Rewrite -->
+                            <div class="folder-group mt-0.5">
+                                <div class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-700 dark:text-gray-300 transition-colors"
+                                    onclick="toggleFolderRecursive(this)">
+                                    <svg class="w-3.5 h-3.5 opacity-60 mr-2 folder-icon shrink-0" fill="currentColor"
+                                        viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    <svg class="w-4 h-4 text-sky-500 mr-2.5 opacity-80 shrink-0" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z">
+                                        </path>
+                                    </svg>
+                                    <span class="font-medium truncate">API Gateway V2</span>
+                                </div>
+                                <div class="pl-[22px] mt-0.5 folder-content hidden">
+                                    <div
+                                        class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-600 dark:text-gray-400 transition-colors mt-0.5">
+                                        <svg class="w-4 h-4 mr-2 text-[#e34c26]" fill="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path
+                                                d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4 11h-4v4h-2v-4H6v-2h4V7h2v4h4v2z" />
+                                        </svg>
+                                        <span>routes.rs</span>
+                                    </div>
+                                    <div
+                                        class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-600 dark:text-gray-400 transition-colors mt-0.5">
+                                        <svg class="w-4 h-4 mr-2 text-[#e34c26]" fill="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path
+                                                d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4 11h-4v4h-2v-4H6v-2h4V7h2v4h4v2z" />
+                                        </svg>
+                                        <span>middleware.rs</span>
+                                    </div>
+                                    <div
+                                        class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-600 dark:text-gray-400 transition-colors mt-0.5">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                            </path>
+                                        </svg>
+                                        <span>README.md</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROOT: Personal -->
+                    <div class="folder-group folder-open mt-3 text-sm">
+                        <div class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-700 dark:text-gray-300 transition-colors"
+                            onclick="toggleFolderRecursive(this)">
+                            <svg class="w-3.5 h-3.5 opacity-60 mr-2 folder-icon shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <svg class="w-4 h-4 text-emerald-500 mr-2.5 opacity-80 shrink-0 main-icon"
+                                fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
+                            </svg>
+                            <span class="font-medium truncate">Personal Notes</span>
+                        </div>
+
+                        <!-- Personal Children -->
+                        <div class="pl-[22px] mt-0.5 folder-content" style="display: block;">
+                            <div
+                                class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-600 dark:text-gray-400 transition-colors mt-0.5">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                                <span>12-Oct-Sync.md</span>
+                            </div>
+                            <div
+                                class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-600 dark:text-gray-400 transition-colors mt-0.5">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                                <span>Todo-List.md</span>
+                            </div>
+                            <div
+                                class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-600 dark:text-gray-400 transition-colors mt-0.5">
+                                <svg class="w-4 h-4 mr-2 text-rose-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z">
+                                    </path>
+                                </svg>
+                                <span>Archive</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROOT: General Library -->
+                    <div class="folder-group mt-3 text-sm">
+                        <div class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-700 dark:text-gray-300 transition-colors"
+                            onclick="toggleFolderRecursive(this)">
+                            <svg class="w-3.5 h-3.5 opacity-60 mr-2 folder-icon shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            <svg class="w-4 h-4 text-purple-500 mr-2.5 opacity-80 shrink-0 main-icon"
+                                fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
+                            </svg>
+                            <span class="font-medium truncate">Code Snippets</span>
+                        </div>
+
+                        <div class="pl-[22px] mt-0.5 folder-content hidden">
+                            <div
+                                class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-600 dark:text-gray-400 transition-colors mt-0.5">
+                                <svg class="w-4 h-4 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"></path>
+                                </svg>
+                                <span>utilities.js</span>
+                            </div>
+                            <div
+                                class="flex items-center px-1.5 py-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer text-gray-600 dark:text-gray-400 transition-colors mt-0.5">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                                <span>React-Hooks.md</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- User profile snippet at bottom -->
+                <div
+                    class="p-3 border-t border-black/5 dark:border-white/5 flex items-center gap-2 m-2 ml-1 rounded-xl cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors profile-container">
+                    <div
+                        class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 text-white flex items-center justify-center font-bold text-xs shadow-md shrink-0">
+                        US
+                    </div>
+                    <div class="flex-1 overflow-hidden profile-text">
+                        <div class="text-xs font-semibold truncate">alex@glassnote.app</div>
+                        <div class="text-[10px] opacity-60 truncate">Free Plan</div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Editor Area -->
+            <main class="flex-1 flex flex-col min-w-0 relative">
+
+                <!-- Tab Row -->
+                <div
+                    class="flex h-11 border-b border-black/5 dark:border-white/5 px-4 items-end gap-1.5 pt-1 overflow-x-auto select-none">
+
+                    <!-- Active Tab -->
+                    <div
+                        class="flex items-center h-[34px] px-4 rounded-t-lg glass-tab-active font-medium cursor-pointer gap-2 min-w-[150px] relative z-10 transition-colors">
+                        <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        <span class="text-[13px] truncate flex-1">Architecture.md</span>
+                        <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div> <!-- Unsaved indicator dot -->
+                        <button
+                            class="w-5 h-5 flex items-center justify-center rounded-md hover:bg-black/10 dark:hover:bg-white/10 opacity-60 hover:opacity-100">×</button>
+                    </div>
+
+                    <!-- Inactive Tab -->
+                    <div
+                        class="flex items-center h-[32px] px-4 rounded-t-lg border border-transparent hover:bg-black/5 dark:hover:bg-white/5 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 font-medium cursor-pointer gap-2 min-w-[150px] transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        <span class="text-[13px] truncate flex-1">Design-System.md</span>
+                        <button
+                            class="w-5 h-5 flex items-center justify-center rounded-md hover:bg-black/10 dark:hover:bg-white/10 opacity-0 hover:opacity-100 transition-opacity">×</button>
+                    </div>
+
+                </div>
+
+                <!-- Editor Container -->
+                <div class="flex-1 w-full overflow-hidden flex flex-col relative">
+                    <textarea id="markdown-editor"># Aero Design Architecture
+
+## Core Philosophy
+We believe an application should look as responsive as it feels. Taking inspiration from glassmorphism, we build layers of frosted depth over vibrant backdrops.
+
+### Key Points:
+1. **Fluid Typography:** Scales nicely on high DPI displays.
+2. **Dynamic Theming:** Smooth transitions between `Light Mode` and `Dark Mode`.
+3. **Subtle Elevation:** Dropshadows and translucent borders define structure without clutter.
+
+```js
+// The toggle orchestrator
+function switchTheme() {
+    document.documentElement.classList.toggle('dark');
+}
+```
+
+> "Design is not just what it looks like and feels like. Design is how it works."
+> — *Steve Jobs*
+
+[View Figma Prototypes](https://figma.com/example)
+</textarea>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Settings Modal Backdrop -->
+    <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-backdrop">
+        <!-- Modal Window -->
+        <div
+            class="w-full max-w-[700px] h-[500px] rounded-xl flex flex-col glass-container modal-window shadow-2xl relative">
+
+            <!-- Modal Header -->
+            <div
+                class="h-12 border-b border-black/5 dark:border-white/5 flex items-center justify-between px-4 sticky top-0 bg-white/30 dark:bg-black/20 rounded-t-xl z-10 backdrop-blur-md">
+                <h2 class="font-semibold text-sm">Settings</h2>
+                <button id="close-settings-btn"
+                    class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body (Master-Detail Layout) -->
+            <div class="flex flex-1 overflow-hidden">
+                <!-- Master: Sidebar -->
+                <div
+                    class="w-[200px] border-r border-black/5 dark:border-white/5 p-3 flex flex-col gap-1 overflow-y-auto">
+                    <button
+                        class="settings-tab-btn active text-left px-3 py-2 rounded-lg text-sm font-medium bg-black/5 dark:bg-white/10 text-blue-600 dark:text-blue-400"
+                        data-target="settings-general">General</button>
+                    <button
+                        class="settings-tab-btn text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-gray-600 dark:text-gray-400"
+                        data-target="settings-appearance">Appearance</button>
+                    <button
+                        class="settings-tab-btn text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-gray-600 dark:text-gray-400"
+                        data-target="settings-editor">Editor</button>
+                    <div class="flex-1"></div>
+                    <button
+                        class="settings-tab-btn text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-gray-600 dark:text-gray-400"
+                        data-target="settings-about">About</button>
+                </div>
+
+                <!-- Detail: Content -->
+                <div class="flex-1 p-6 overflow-y-auto bg-white/10 dark:bg-black/10 text-gray-800 dark:text-gray-200">
+
+                    <!-- General Settings -->
+                    <div id="settings-general" class="settings-pane block">
+                        <h3 class="text-lg font-semibold mb-4">General Settings</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="font-medium text-sm">Auto Save</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Automatically save
+                                        changes every minute.</div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                    <div
+                                        class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-500 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500">
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="font-medium text-sm">Notifications</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Show desktop
+                                        notifications.</div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer">
+                                    <div
+                                        class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-500 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500">
+                                    </div>
+                                </label>
+                            </div>
+                            <div>
+                                <label class="block font-medium text-sm mb-1.5">Default Workspace</label>
+                                <select
+                                    class="w-full bg-white/50 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                                    <option>Local Files</option>
+                                    <option>iCloud Drive</option>
+                                    <option>Matrix Cloud</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appearance Settings -->
+                    <div id="settings-appearance" class="settings-pane hidden">
+                        <h3 class="text-lg font-semibold mb-4">Appearance</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block font-medium text-sm mb-1.5">Theme Accent Color</label>
+                                <div class="flex gap-2 mt-2">
+                                    <button
+                                        class="w-6 h-6 rounded-full bg-blue-500 ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-zinc-800"></button>
+                                    <button class="w-6 h-6 rounded-full bg-purple-500"></button>
+                                    <button class="w-6 h-6 rounded-full bg-emerald-500"></button>
+                                    <button class="w-6 h-6 rounded-full bg-rose-500"></button>
+                                    <button class="w-6 h-6 rounded-full bg-amber-500"></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between mt-6">
+                                <div>
+                                    <div class="font-medium text-sm">Translucency (Glass Effect)</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Enable acrylic/glass
+                                        background blurs.</div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                    <div
+                                        class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-500 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500">
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Editor Settings -->
+                    <div id="settings-editor" class="settings-pane hidden">
+                        <h3 class="text-lg font-semibold mb-4">Editor Configuration</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block font-medium text-sm mb-1.5">Font Family</label>
+                                <select
+                                    class="w-full bg-white/50 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                                    <option>Inter (Default)</option>
+                                    <option>Roboto</option>
+                                    <option>Fira Code</option>
+                                    <option>JetBrains Mono</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-medium text-sm mb-1.5">Font Size</label>
+                                <input type="range" class="w-full accent-blue-500" min="12" max="24" value="15">
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>Small</span>
+                                    <span>15px</span>
+                                    <span>Large</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="font-medium text-sm">Line Wrap</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Wrap text to fit editor
+                                        width.</div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                    <div
+                                        class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-500 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-500">
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About Settings -->
+                    <div id="settings-about" class="settings-pane hidden">
+                        <h3 class="text-lg font-semibold mb-4">About Matrix Note</h3>
+                        <div class="flex flex-col items-center justify-center mt-8 space-y-3">
+                            <div
+                                class="w-16 h-16 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div class="text-xl font-bold">Matrix Note</div>
+                            <div class="text-sm opacity-60">Version 2.0.4 (Glassmorphism Stable)</div>
+                            <button
+                                class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors shadow-md">Check
+                                for Updates</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SimpleMDE initialization
+        const editor = new SimpleMDE({
+            element: document.getElementById("markdown-editor"),
+            toolbar: [
+                "bold", "italic", "heading", "|",
+                "quote", "code", "unordered-list", "ordered-list", "|",
+                "link", "image", "preview"
+            ],
+            status: false,
+            spellChecker: false
+        });
+
+        // Theme toggling script
+        const themeBtn = document.getElementById('theme-toggle');
+        const htmlContext = document.documentElement;
+
+        themeBtn.addEventListener('click', () => {
+            htmlContext.classList.toggle('dark');
+        });
+
+        // Global reusable folder toggle function enabling limitless nested layers
+        window.toggleFolderRecursive = function (element) {
+            const parent = element.parentElement;
+            const contents = element.nextElementSibling;
+
+            // If sidebar is collapsed, clicking folders might not do anything, or we could auto-expand
+            if (document.getElementById('app-sidebar').classList.contains('sidebar-collapsed')) {
+                document.getElementById('app-sidebar').classList.remove('sidebar-collapsed');
+                return;
+            }
+
+            if (!contents || !contents.classList.contains('folder-content')) return;
+
+            if (contents.style.display === 'none' || !contents.style.display) {
+                contents.style.display = 'block';
+                parent.classList.add('folder-open');
+                contents.classList.remove('hidden');
+            } else {
+                contents.style.display = 'none';
+                parent.classList.remove('folder-open');
+                contents.classList.add('hidden');
+            }
+        };
+
+        // Sidebar collapse toggle
+        const sidebarToggleBtn = document.getElementById('sidebar-toggle');
+        const appSidebar = document.getElementById('app-sidebar');
+
+        sidebarToggleBtn.addEventListener('click', () => {
+            appSidebar.classList.toggle('sidebar-collapsed');
+        });
+
+        // Settings Modal Functionality
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeSettingsBtn = document.getElementById('close-settings-btn');
+        const tabBtns = document.querySelectorAll('.settings-tab-btn');
+        const tabPanes = document.querySelectorAll('.settings-pane');
+
+        // Open modal
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.classList.add('show');
+        });
+
+        // Close modal
+        closeSettingsBtn.addEventListener('click', () => {
+            settingsModal.classList.remove('show');
+        });
+
+
+        // Settings Dialog Tab switching logic
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Reset states
+                tabBtns.forEach(b => {
+                    b.classList.remove('bg-black/5', 'dark:bg-white/10', 'text-blue-600', 'dark:text-blue-400', 'active');
+                    b.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:bg-black/5', 'dark:hover:bg-white/5');
+                });
+                tabPanes.forEach(p => {
+                    p.classList.add('hidden');
+                    p.classList.remove('block');
+                });
+
+                // Set active target
+                btn.classList.add('bg-black/5', 'dark:bg-white/10', 'text-blue-600', 'dark:text-blue-400', 'active');
+                btn.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:bg-black/5', 'dark:hover:bg-white/5');
+
+                const targetId = btn.getAttribute('data-target');
+                document.getElementById(targetId).classList.remove('hidden');
+                document.getElementById(targetId).classList.add('block');
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,101 @@
+# Matrix Notebook
+
+Matrix Notebook is a Tauri 2 + Angular 21 desktop application starter that keeps the front-end and Rust core in a single monorepo and ships with TailwindCSS wiring.
+
+## Prerequisites
+
+- Node.js >= 20.11 (ships with npm >= 10.5)
+- Rust toolchain (stable channel) with the `wasm32-unknown-unknown` target
+- Cargo dependencies for Tauri: `cargo install tauri-cli` (or rely on the npm CLI wrapper)
+- pnpm optional, but the workspace is configured for npm by default
+
+## Folder structure
+
+```
+matrix-note/
++-- src-tauri/
+¦   +-- build.rs
+¦   +-- Cargo.toml
+¦   +-- tauri.conf.json
+¦   +-- src/
+¦       +-- commands/
+¦       ¦   +-- mod.rs
+¦       +-- models/
+¦       ¦   +-- mod.rs
+¦       +-- lib.rs
+¦       +-- main.rs
++-- src/
+¦   +-- app/
+¦   ¦   +-- components/
+¦   ¦   +-- models/
+¦   ¦   +-- services/
+¦   ¦       +-- services/
+¦   +-- assets/
+¦   +-- index.html
+¦   +-- styles.css
++-- scripts/
++-- angular.json
++-- package.json
++-- postcss.config.js
++-- tailwind.config.ts
++-- tsconfig.json
++-- README.md
+```
+
+## Commands to scaffold Angular
+
+The repo already includes minimal configs so you can start building immediately. If you need to regenerate the Angular workspace with the official CLI, run these commands from the project root:
+
+```bash
+npm install
+npx ng new matrix-notebook \
+  --directory src \
+  --standalone \
+  --routing \
+  --style css \
+  --inline-style false \
+  --inline-template false \
+  --skip-git \
+  --skip-install
+npm install
+```
+
+This keeps the Angular app inside `./src`, matching the monorepo layout above.
+
+## Commands to scaffold Tauri
+
+The `src-tauri` folder is pre-created. To (re)initialize it with the CLI using Tauri v2 defaults:
+
+```bash
+npm exec tauri init -- \
+  --ci \
+  --app-name "Matrix Notebook" \
+  --dist-dir "../dist/matrix-notebook/browser" \
+  --dev-url "http://localhost:4200" \
+  --before-build-command "npm run build:web" \
+  --before-dev-command "npm run start:web"
+```
+
+If you only need to sync config changes, edit `src-tauri/tauri.conf.json` directly.
+
+## Tailwind readiness
+
+- `tailwind.config.ts` watches every template and TypeScript file in `src/`.
+- `postcss.config.js` pipes Tailwind and Autoprefixer.
+- `src/styles.css` is preloaded with the three Tailwind directives.
+- After generating the Angular app, ensure `angular.json` lists `src/styles.css` under the global styles array (Angular CLI does this automatically for new projects using CSS).
+
+## Development workflow
+
+1. Install JS dependencies `npm install` (installs Angular CLI, Tailwind, and the Tauri CLI wrapper).
+2. Install Rust crates by building once: `npm run tauri:dev` (this will download the Rust dependencies automatically).
+3. Day-to-day commands:
+   - `npm run start:web` — serve Angular only, useful for UI work.
+   - `npm run tauri:dev` — run Angular dev server + Tauri shell for desktop testing.
+   - `npm run build:web` then `npm run tauri:build` — create a production desktop bundle.
+
+## Next steps
+
+- Generate Angular standalone components and feature modules under `src/app/models` and `src/app/components`.
+- Add Rust commands inside `src-tauri/src/commands` and expose them via a dedicated Angular service inside `src/app/services/services/tauri.service.ts`.
+- Wire up shared DTOs in `src-tauri/src/models` and mirror them with TypeScript types using a codegen script in `scripts/` when ready.
