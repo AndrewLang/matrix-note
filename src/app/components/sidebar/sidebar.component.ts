@@ -1,8 +1,10 @@
 import { Component } from "@angular/core";
+import { SvgComponent } from "../../shared/svg/svg.component";
 
 @Component({
   selector: "app-sidebar",
   standalone: true,
+  imports: [SvgComponent],
   templateUrl: "./sidebar.component.html"
 })
 export class SidebarComponent {

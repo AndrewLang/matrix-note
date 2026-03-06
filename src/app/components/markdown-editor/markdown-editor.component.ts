@@ -1,10 +1,11 @@
 import { Component, Input } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { SvgComponent } from "../../shared/svg/svg.component";
 
 @Component({
   selector: "app-markdown-editor",
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, SvgComponent],
   host: {
     class: "flex h-full min-h-0 w-full flex-1 flex-col"
   },

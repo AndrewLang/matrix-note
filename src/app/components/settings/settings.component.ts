@@ -1,12 +1,13 @@
 import { NgClass } from "@angular/common";
 import { Component, EventEmitter, HostListener, Input, Output, signal } from "@angular/core";
+import { SvgComponent } from "../../shared/svg/svg.component";
 
 type SettingsTab = "general" | "appearance" | "editor" | "about";
 
 @Component({
   selector: "app-settings",
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, SvgComponent],
   templateUrl: "./settings.component.html"
 })
 export class SettingsComponent {

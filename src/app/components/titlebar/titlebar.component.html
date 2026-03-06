@@ -3,25 +3,16 @@
   <div class="flex items-center gap-2 pl-1 w-1/3">
     <button data-no-drag data-tauri-drag-region="false" id="sidebar-toggle"
       class="p-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors opacity-80 hover:opacity-100 flex-shrink-0">
-      <svg class="w-4 h-4 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-      </svg>
+      <app-svg name="menu" svgClass="h-4 w-4 text-gray-700 dark:text-gray-300"></app-svg>
     </button>
-    <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-      </path>
-    </svg>
+    <app-svg name="appLogo" svgClass="h-4 w-4 shrink-0 text-blue-500"></app-svg>
     <span class="text-xs font-semibold opacity-80 truncate">Matrix Note</span>
   </div>
 
   <div class="flex-1 flex justify-center h-full items-center">
     <div data-no-drag
       class="flex items-center bg-black/5 dark:bg-white/5 rounded-md w-[300px] h-6 px-2.5 text-[11px] border border-transparent hover:border-black/10 dark:hover:border-white/10 transition-colors">
-      <svg class="w-3 h-3 opacity-60 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-      </svg>
+      <app-svg name="search" svgClass="mr-2 h-3 w-3 opacity-60"></app-svg>
       <input data-tauri-drag-region="false" type="text" placeholder="Search files, contents..."
         class="bg-transparent border-none text-inherit focus:outline-none w-full placeholder-gray-500 dark:placeholder-gray-400" />
     </div>
@@ -31,45 +22,26 @@
     <button data-no-drag data-tauri-drag-region="false" id="settings-btn" (click)="requestSettingsOpen()"
       class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors mr-1"
       title="Settings">
-      <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
-        </path>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
-        </path>
-      </svg>
+      <app-svg name="settings" svgClass="h-4 w-4 text-gray-600 dark:text-gray-400"></app-svg>
     </button>
     <button data-no-drag data-tauri-drag-region="false" id="theme-toggle" (click)="toggleTheme()"
       class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors mr-3"
       title="Toggle Theme">
-      <svg class="hidden dark:block w-4 h-4 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
-        </path>
-      </svg>
-      <svg class="block dark:hidden w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-      </svg>
+      <app-svg name="sun" svgClass="hidden h-4 w-4 text-yellow-300 dark:block"></app-svg>
+      <app-svg name="moon" svgClass="block h-4 w-4 text-indigo-500 dark:hidden"></app-svg>
     </button>
 
     <button data-no-drag data-tauri-drag-region="false" (click)="minimizeWindow()"
       class="w-10 h-full flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-      <svg class="w-2.5 h-2.5" stroke="currentColor" stroke-width="1.2" viewBox="0 0 10 10" fill="none">
-        <path d="M 0 5 L 10 5" />
-      </svg>
+      <app-svg name="windowMinimize" svgClass="h-2.5 w-2.5"></app-svg>
     </button>
     <button data-no-drag data-tauri-drag-region="false" (click)="toggleMaximizeWindow()"
       class="w-10 h-full flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-      <svg class="w-2.5 h-2.5" stroke="currentColor" stroke-width="1.2" viewBox="0 0 10 10" fill="none">
-        <path d="M 1 1 L 9 1 L 9 9 L 1 9 Z" />
-      </svg>
+      <app-svg name="windowMaximize" svgClass="h-2.5 w-2.5"></app-svg>
     </button>
     <button data-no-drag data-tauri-drag-region="false" (click)="closeWindow()"
       class="w-10 h-full flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-red-500 hover:text-white transition-colors">
-      <svg class="w-2.5 h-2.5" stroke="currentColor" stroke-width="1.2" viewBox="0 0 10 10" fill="none">
-        <path d="M 1 1 L 9 9 M 9 1 L 1 9" />
-      </svg>
+      <app-svg name="windowClose" svgClass="h-2.5 w-2.5"></app-svg>
     </button>
   </div>
 </div>

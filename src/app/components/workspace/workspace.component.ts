@@ -1,5 +1,6 @@
 import { NgClass } from "@angular/common";
 import { Component, signal } from "@angular/core";
+import { SvgComponent } from "../../shared/svg/svg.component";
 import { WorkspaceTabComponent } from "./workspace-tab/workspace-tab.component";
 
 type WorkspaceTab = {
@@ -12,7 +13,7 @@ type WorkspaceTab = {
 @Component({
   selector: "app-workspace",
   standalone: true,
-  imports: [NgClass, WorkspaceTabComponent],
+  imports: [NgClass, SvgComponent, WorkspaceTabComponent],
   host: {
     class: "flex-1 min-w-0 min-h-0 w-full h-full flex"
   },

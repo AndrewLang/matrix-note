@@ -1,5 +1,6 @@
 import { DOCUMENT } from "@angular/common";
 import { Component, EventEmitter, Output, inject, signal } from "@angular/core";
+import { SvgComponent } from "../../shared/svg/svg.component";
 
 type TauriWindowApi = {
   close?: () => Promise<void> | void;
@@ -16,6 +17,7 @@ type TauriGlobal = {
 @Component({
   selector: "app-titlebar",
   standalone: true,
+  imports: [SvgComponent],
   templateUrl: "./titlebar.component.html"
 })
 export class TitlebarComponent {
