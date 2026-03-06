@@ -19,16 +19,17 @@ export class SidebarComponent {
       return;
     }
 
+    const icon = trigger.querySelector("svg") as SVGElement | null;
     const isClosed = contents.style.display === "none" || !contents.style.display;
     if (isClosed) {
       contents.style.display = "block";
-      parent.classList.add("folder-open");
       contents.classList.remove("hidden");
+      icon?.classList.add("rotate-90");
       return;
     }
 
     contents.style.display = "none";
-    parent.classList.remove("folder-open");
     contents.classList.add("hidden");
+    icon?.classList.remove("rotate-90");
   }
 }

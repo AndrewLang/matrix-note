@@ -1,7 +1,9 @@
 <div
   class="h-screen w-screen overflow-hidden text-gray-800 dark:text-gray-100 transition-colors duration-500 relative bg-slate-200 dark:bg-zinc-900">
 
-  <div class="w-full h-full overflow-hidden flex flex-col mn-glass-container z-10 rounded-none">
+  <div
+    class="z-10 flex h-full w-full flex-col overflow-hidden rounded-none border border-white/40 bg-white/40 shadow-2xl shadow-black/10 backdrop-blur-[24px] dark:border-white/10 dark:bg-[rgba(30,30,35,0.75)] dark:shadow-black/50"
+  >
     <app-titlebar (openSettings)="openSettings()" />
     <div id="body" class="flex-1 flex overflow-hidden">
       <app-sidebar />
