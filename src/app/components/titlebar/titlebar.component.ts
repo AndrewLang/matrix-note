@@ -1,5 +1,5 @@
 import { DOCUMENT } from "@angular/common";
-import { Component, inject, signal } from "@angular/core";
+import { Component, EventEmitter, Output, inject, signal } from "@angular/core";
 
 @Component({
   selector: "app-titlebar",
@@ -9,6 +9,7 @@ import { Component, inject, signal } from "@angular/core";
 export class TitlebarComponent {
   private readonly document = inject(DOCUMENT);
   readonly isDark = signal(false);
+  @Output() readonly openSettings = new EventEmitter<void>();
 
   constructor() {
     if (typeof window === "undefined") {
@@ -26,5 +27,9 @@ export class TitlebarComponent {
       this.document.documentElement.classList.toggle("dark", next);
       return next;
     });
+  }
+
+  requestSettingsOpen(): void {
+    this.openSettings.emit();
   }
 }

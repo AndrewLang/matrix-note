@@ -5,10 +5,18 @@
 @layer base {
   :root {
     color-scheme: light;
+    --mn-scrollbar-track: rgba(15, 23, 42, 0.06);
+    --mn-scrollbar-thumb: rgba(59, 130, 246, 0.45);
+    --mn-scrollbar-thumb-hover: rgba(59, 130, 246, 0.65);
+    --mn-scrollbar-thumb-active: rgba(37, 99, 235, 0.78);
   }
 
   .dark {
     color-scheme: dark;
+    --mn-scrollbar-track: rgba(148, 163, 184, 0.12);
+    --mn-scrollbar-thumb: rgba(96, 165, 250, 0.5);
+    --mn-scrollbar-thumb-hover: rgba(125, 211, 252, 0.68);
+    --mn-scrollbar-thumb-active: rgba(56, 189, 248, 0.8);
   }
 
   html {
@@ -17,6 +25,52 @@
 
   body {
     @apply min-h-full bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
+  }
+
+  html,
+  body,
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--mn-scrollbar-thumb) var(--mn-scrollbar-track);
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+  }
+
+  html::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track,
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: var(--mn-scrollbar-track);
+    border-radius: 999px;
+  }
+
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb,
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--mn-scrollbar-thumb);
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: content-box;
+  }
+
+  html::-webkit-scrollbar-thumb:hover,
+  body::-webkit-scrollbar-thumb:hover,
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--mn-scrollbar-thumb-hover);
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  html::-webkit-scrollbar-thumb:active,
+  body::-webkit-scrollbar-thumb:active,
+  .custom-scrollbar::-webkit-scrollbar-thumb:active {
+    background: var(--mn-scrollbar-thumb-active);
+    border: 2px solid transparent;
+    background-clip: content-box;
   }
 }
 
@@ -112,5 +166,30 @@
     justify-content: center;
     padding: 12px 0;
     margin: 8px 4px;
+  }
+
+  .modal-backdrop {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal-window {
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  }
+
+  .modal-backdrop.show .modal-window {
+    transform: scale(1);
+    opacity: 1;
   }
 }
