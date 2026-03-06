@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf } from "@angular/common";
+import { NgClass } from "@angular/common";
 import { Component, signal } from "@angular/core";
 import { WorkspaceTabComponent } from "./workspace-tab/workspace-tab.component";
 
@@ -12,7 +12,10 @@ type WorkspaceTab = {
 @Component({
   selector: "app-workspace",
   standalone: true,
-  imports: [NgFor, NgIf, NgClass, WorkspaceTabComponent],
+  imports: [NgClass, WorkspaceTabComponent],
+  host: {
+    class: "flex-1 min-w-0 min-h-0 w-full h-full flex"
+  },
   templateUrl: "./workspace.component.html"
 })
 export class WorkspaceComponent {

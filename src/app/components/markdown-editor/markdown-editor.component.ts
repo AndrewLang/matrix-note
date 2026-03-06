@@ -5,6 +5,9 @@ import { FormsModule } from "@angular/forms";
   selector: "app-markdown-editor",
   standalone: true,
   imports: [FormsModule],
+  host: {
+    class: "flex h-full min-h-0 w-full flex-1 flex-col"
+  },
   templateUrl: "./markdown-editor.component.html"
 })
 export class MarkdownEditorComponent {

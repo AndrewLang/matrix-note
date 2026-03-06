@@ -5,26 +5,26 @@
 @layer base {
   :root {
     color-scheme: light;
-    --mn-scrollbar-track: rgba(15, 23, 42, 0.06);
-    --mn-scrollbar-thumb: rgba(59, 130, 246, 0.45);
-    --mn-scrollbar-thumb-hover: rgba(59, 130, 246, 0.65);
-    --mn-scrollbar-thumb-active: rgba(37, 99, 235, 0.78);
+    --mn-scrollbar-track: rgba(15, 23, 42, 0.32);
+    --mn-scrollbar-thumb: rgba(71, 85, 105, 0.82);
+    --mn-scrollbar-thumb-hover: rgba(100, 116, 139, 0.92);
+    --mn-scrollbar-thumb-active: rgba(148, 163, 184, 0.96);
   }
 
   .dark {
     color-scheme: dark;
-    --mn-scrollbar-track: rgba(148, 163, 184, 0.12);
-    --mn-scrollbar-thumb: rgba(96, 165, 250, 0.5);
-    --mn-scrollbar-thumb-hover: rgba(125, 211, 252, 0.68);
-    --mn-scrollbar-thumb-active: rgba(56, 189, 248, 0.8);
+    --mn-scrollbar-track: rgba(15, 23, 42, 0.42);
+    --mn-scrollbar-thumb: rgba(100, 116, 139, 0.86);
+    --mn-scrollbar-thumb-hover: rgba(148, 163, 184, 0.94);
+    --mn-scrollbar-thumb-active: rgba(203, 213, 225, 0.98);
   }
 
   html {
-    @apply h-full bg-slate-50 font-sans text-slate-900 antialiased;
+    @apply h-full w-full bg-slate-50 font-sans text-slate-900 antialiased;
   }
 
   body {
-    @apply min-h-full bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
+    @apply m-0 min-h-full w-full bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
   }
 
   html,
@@ -191,5 +191,17 @@
   .modal-backdrop.show .modal-window {
     transform: scale(1);
     opacity: 1;
+  }
+
+  [data-tauri-drag-region] {
+    -webkit-app-region: drag;
+    app-region: drag;
+    cursor: default;
+  }
+
+  [data-tauri-drag-region="false"],
+  [data-no-drag] {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
   }
 }

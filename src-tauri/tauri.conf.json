@@ -20,6 +20,10 @@
         "width": 1280,
         "height": 800,
         "resizable": true,
+        "minimizable": true,
+        "maximizable": true,
+        "decorations": false,
+        "dragDropEnabled": false,
         "fullscreen": false
       }
     ]

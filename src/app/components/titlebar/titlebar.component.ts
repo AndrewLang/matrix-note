@@ -1,6 +1,18 @@
 import { DOCUMENT } from "@angular/common";
 import { Component, EventEmitter, Output, inject, signal } from "@angular/core";
 
+type TauriWindowApi = {
+  close?: () => Promise<void> | void;
+  minimize?: () => Promise<void> | void;
+  toggleMaximize?: () => Promise<void> | void;
+};
+
+type TauriGlobal = {
+  window?: {
+    getCurrentWindow?: () => TauriWindowApi;
+  };
+};
+
 @Component({
   selector: "app-titlebar",
   standalone: true,
@@ -31,5 +43,26 @@ export class TitlebarComponent {
 
   requestSettingsOpen(): void {
     this.openSettings.emit();
+  }
+
+  async minimizeWindow(): Promise<void> {
+    await this.getCurrentWindow()?.minimize?.();
+  }
+
+  async toggleMaximizeWindow(): Promise<void> {
+    await this.getCurrentWindow()?.toggleMaximize?.();
+  }
+
+  async closeWindow(): Promise<void> {
+    await this.getCurrentWindow()?.close?.();
+  }
+
+  private getCurrentWindow(): TauriWindowApi | null {
+    if (typeof window === "undefined") {
+      return null;
+    }
+
+    const tauri = (window as Window & { __TAURI__?: TauriGlobal }).__TAURI__;
+    return tauri?.window?.getCurrentWindow?.() ?? null;
   }
 }

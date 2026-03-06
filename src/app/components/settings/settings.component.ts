@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf } from "@angular/common";
+import { NgClass } from "@angular/common";
 import { Component, EventEmitter, HostListener, Input, Output, signal } from "@angular/core";
 
 type SettingsTab = "general" | "appearance" | "editor" | "about";
@@ -6,7 +6,7 @@ type SettingsTab = "general" | "appearance" | "editor" | "about";
 @Component({
   selector: "app-settings",
   standalone: true,
-  imports: [NgClass, NgFor, NgIf],
+  imports: [NgClass],
   templateUrl: "./settings.component.html"
 })
 export class SettingsComponent {

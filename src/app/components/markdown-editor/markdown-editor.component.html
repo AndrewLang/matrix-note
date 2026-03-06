@@ -1,4 +1,4 @@
-<div class="flex-1 w-full overflow-hidden flex flex-col relative">
+<div class="flex-1 w-full h-full min-h-0 overflow-hidden flex flex-col relative">
   <div class="mn-editor-toolbar">
     <button type="button" class="mn-editor-tool" aria-label="Bold">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,5 +55,5 @@
     </button>
   </div>
 
-  <textarea class="mn-editor-textarea" [(ngModel)]="content"></textarea>
+  <textarea class="mn-editor-textarea h-full min-h-0" [(ngModel)]="content"></textarea>
 </div>
