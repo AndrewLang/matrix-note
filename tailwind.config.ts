@@ -2,8 +2,7 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
-    "./src/**/*.{html,ts}",
-    "./src-tauri/**/*.{html,ts,rs}"
+    "./src/**/*.{html,ts}"
   ],
   darkMode: "class",
   theme: {

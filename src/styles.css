@@ -19,3 +19,98 @@
     @apply min-h-full bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
   }
 }
+
+@layer components {
+  .mn-glass-container {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+  }
+
+  html.dark .mn-glass-container {
+    background: rgba(30, 30, 35, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  .mn-glass-tab-active {
+    @apply bg-white/50 border border-black/5 border-b-0;
+  }
+
+  html.dark .mn-glass-tab-active {
+    @apply bg-white/[0.06] border-white/[0.05] border-b-0;
+  }
+
+  .mn-editor-toolbar {
+    @apply flex items-center gap-0.5 px-4 py-2 border-b border-black/5 dark:border-white/5;
+  }
+
+  .mn-editor-tool {
+    @apply text-gray-700 dark:text-gray-300 rounded-md w-[30px] h-[30px] inline-flex items-center justify-center transition-colors;
+  }
+
+  .mn-editor-tool:hover,
+  .mn-editor-tool:focus-visible {
+    @apply bg-black/[0.08] dark:bg-white/10 outline-none;
+  }
+
+  .mn-editor-textarea {
+    @apply flex-1 w-full resize-none bg-transparent border-0 px-8 py-4 text-[15px] leading-[1.7] text-gray-800 dark:text-gray-100 focus:outline-none;
+    caret-color: #0f172a;
+  }
+
+  html.dark .mn-editor-textarea {
+    caret-color: #f8fafc;
+  }
+
+  .mn-editor-textarea::selection {
+    background: rgba(59, 130, 246, 0.2);
+  }
+
+  html.dark .mn-editor-textarea::selection {
+    background: rgba(96, 165, 250, 0.25);
+  }
+
+  .mn-sidebar .folder-icon {
+    @apply transition-transform duration-200 ease-in-out;
+  }
+
+  .mn-sidebar .folder-open .folder-icon {
+    transform: rotate(90deg);
+  }
+
+  .mn-sidebar.sidebar-collapsed {
+    width: 60px !important;
+  }
+
+  .mn-sidebar.sidebar-collapsed .truncate,
+  .mn-sidebar.sidebar-collapsed .profile-text {
+    display: none;
+  }
+
+  .mn-sidebar.sidebar-collapsed .folder-icon,
+  .mn-sidebar.sidebar-collapsed .folder-content {
+    display: none !important;
+  }
+
+  .mn-sidebar.sidebar-collapsed .folder-group > div {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: 4px;
+  }
+
+  .mn-sidebar.sidebar-collapsed .main-icon {
+    margin-right: 0 !important;
+    width: 18px;
+    height: 18px;
+  }
+
+  .mn-sidebar.sidebar-collapsed .profile-container {
+    justify-content: center;
+    padding: 12px 0;
+    margin: 8px 4px;
+  }
+}

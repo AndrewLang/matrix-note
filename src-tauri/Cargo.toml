@@ -6,7 +6,7 @@ description = "Desktop knowledge notebook powered by Tauri + Angular"
 license = "MIT"
 
 [lib]
-name = "matrix_notebook"
+name = "matrix_notebook_core"
 path = "src/lib.rs"
 crate-type = ["staticlib", "cdylib", "rlib"]
 

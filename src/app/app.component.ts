@@ -1,12 +1,12 @@
 import { Component } from "@angular/core";
-import { TailwindDemoComponent } from "./components/tailwind-demo/tailwind-demo.component";
+import { HomeComponent } from "./components/home/home.component";
 
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [TailwindDemoComponent],
+  imports: [HomeComponent],
   template: `
-    <app-tailwind-demo />
+    <app-home />
   `
 })
 export class AppComponent {}

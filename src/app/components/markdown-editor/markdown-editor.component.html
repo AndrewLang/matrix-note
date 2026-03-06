@@ -1,0 +1,59 @@
+<div class="flex-1 w-full overflow-hidden flex flex-col relative">
+  <div class="mn-editor-toolbar">
+    <button type="button" class="mn-editor-tool" aria-label="Bold">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 4h7a4 4 0 110 8H6zm0 8h8a4 4 0 010 8H6z"></path>
+      </svg>
+    </button>
+    <button type="button" class="mn-editor-tool" aria-label="Italic">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4h8M6 20h8M14 4L10 20"></path>
+      </svg>
+    </button>
+    <button type="button" class="mn-editor-tool" aria-label="Heading">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 6v12M19 6v12M5 12h14"></path>
+      </svg>
+    </button>
+    <span class="mx-1 h-5 w-px bg-black/10 dark:bg-white/10"></span>
+    <button type="button" class="mn-editor-tool" aria-label="Quote">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7H5v6h4V7zm10 0h-4v6h4V7z"></path>
+      </svg>
+    </button>
+    <button type="button" class="mn-editor-tool" aria-label="Code">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l-4 3 4 3m8-6l4 3-4 3"></path>
+      </svg>
+    </button>
+    <button type="button" class="mn-editor-tool" aria-label="List">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"></path>
+      </svg>
+    </button>
+    <button type="button" class="mn-editor-tool" aria-label="Numbered List">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h10M10 12h10M10 18h10M4 6h1v4M4 13h2l-2 3h2"></path>
+      </svg>
+    </button>
+    <span class="mx-1 h-5 w-px bg-black/10 dark:bg-white/10"></span>
+    <button type="button" class="mn-editor-tool" aria-label="Link">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14a5 5 0 007.07 0l2.83-2.83a5 5 0 00-7.07-7.07L11 5m3 5a5 5 0 00-7.07 0L4.1 12.83a5 5 0 007.07 7.07L13 19"></path>
+      </svg>
+    </button>
+    <button type="button" class="mn-editor-tool" aria-label="Image">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4-4 3 3 5-5 4 4M4 20h16V4H4v16zm4-11h.01"></path>
+      </svg>
+    </button>
+    <button type="button" class="mn-editor-tool" aria-label="Preview">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <textarea class="mn-editor-textarea" [(ngModel)]="content"></textarea>
+</div>
