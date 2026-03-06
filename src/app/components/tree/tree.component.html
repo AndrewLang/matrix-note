@@ -1,35 +1,26 @@
 @for (node of nodes(); track trackNode($index, node)) {
-  <div class="folder-group" [class.mt-0.5]="$index > 0">
-    @if (hasChildren(node)) {
-      <button
-        type="button"
-        class="flex w-full items-center rounded-md px-1.5 py-1.5 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-        [class]="rowClass(node)"
-        (click)="toggle(node)"
-      >
-        <mtx-svg
-          name="chevronRight"
-          [svgClass]="'mr-2 h-3.5 w-3.5 shrink-0 opacity-60 transition-transform duration-200 ease-in-out ' + (isExpanded(node) ? 'rotate-90' : '')"
-        />
-        <mtx-svg [name]="iconName(node)" [svgClass]="iconClass(node)" />
-        <span class="truncate font-medium">{{ node.name }}</span>
-      </button>
+<div [class.mt-0.5]="$index > 0">
+  @if (hasChildren(node)) {
+  <button type="button"
+    class="flex w-full items-center rounded-md px-1.5 py-1 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+    [class]="rowClass(node)" (click)="toggle(node)">
+    <mtx-svg name="chevronRight"
+      [svgClass]="'h-3 w-3 mr-1 shrink-0 opacity-60 transition-transform duration-200 ease-in-out ' + (isExpanded(node) ? 'rotate-90' : '')" />
+    <mtx-svg [name]="iconName(node)" [svgClass]="iconClass(node)" />
+    <span class="truncate font-medium">{{ node.name }}</span>
+  </button>
 
-      @if (isExpanded(node)) {
-        <div class="mt-0.5" [style.padding-left]="childPadding()">
-          <mtx-tree [nodes]="node.children ?? []" [depth]="depth() + 1" />
-        </div>
-      }
-    } @else {
-      <div
-        class="flex items-center rounded-md px-1.5 py-1.5 transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-        [class]="rowClass(node)"
-        [attr.title]="node.description || null"
-      >
-        <span class="mr-2 h-3.5 w-3.5 shrink-0"></span>
-        <mtx-svg [name]="iconName(node)" [svgClass]="iconClass(node)" />
-        <span class="truncate">{{ node.name }}</span>
-      </div>
-    }
+  @if (isExpanded(node)) {
+  <div class="mt-0.5" [style.padding-left]="childPadding()">
+    <mtx-tree [nodes]="node.children ?? []" [depth]="depth() + 1" />
   </div>
+  }
+  } @else {
+  <div class="flex items-center rounded-md px-1.5 py-1 transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+    [class]="rowClass(node)" [attr.title]="node.description || null">
+    <mtx-svg [name]="iconName(node)" [svgClass]="iconClass(node)" />
+    <span class="truncate">{{ node.name }}</span>
+  </div>
+  }
+</div>
 }

@@ -1,0 +1,12 @@
+<div class="flex items-center justify-end gap-1 border-b border-black/5 px-2 py-1 dark:border-white/[0.06]">
+  @for (command of visibleCommands(); track command.id) {
+  <button type="button" class="flex h-7 w-7 items-center justify-center rounded-md border 
+    border-transparent bg-transparent 
+    text-gray-500 transition-colors hover:bg-black/5 hover:text-gray-800 
+    disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:bg-white/[0.06] 
+    dark:hover:text-gray-100" [attr.title]="command.description || command.name"
+    [disabled]="command.canExecute === false" (click)="command.action()">
+    <mtx-svg [name]="iconName(command)" svgClass="h-4 w-4 shrink-0" />
+  </button>
+  }
+</div>

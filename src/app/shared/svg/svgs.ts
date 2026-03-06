@@ -15,6 +15,22 @@ export class Svgs {
     body: `<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>`
   };
 
+  static readonly layoutSidebarInset: SvgDefinition = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    body: `<rect x="3" y="4" width="18" height="16" rx="2"></rect><path stroke-linecap="round" stroke-linejoin="round" d="M9 4v16"></path><path stroke-linecap="round" stroke-linejoin="round" d="m14 10 3 2-3 2"></path>`
+  };
+
+  static readonly layoutSidebarInsetReverse: SvgDefinition = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    body: `<rect x="3" y="4" width="18" height="16" rx="2"></rect><path stroke-linecap="round" stroke-linejoin="round" d="M15 4v16"></path><path stroke-linecap="round" stroke-linejoin="round" d="m10 10-3 2 3 2"></path>`
+  };
+
   static readonly appLogo: SvgDefinition = {
     viewBox: "0 0 24 24",
     fill: "none",
@@ -225,6 +241,8 @@ export class Svgs {
 
   private static readonly registry: Record<string, SvgDefinition> = {
     menu: Svgs.menu,
+    "layout-sidebar-inset": Svgs.layoutSidebarInset,
+    "layout-sidebar-inset-reverse": Svgs.layoutSidebarInsetReverse,
     appLogo: Svgs.appLogo,
     search: Svgs.search,
     settings: Svgs.settings,

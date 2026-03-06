@@ -4,5 +4,7 @@ export interface TreeNode {
     description?: string;
     icon?: string;
     color?: string;
+    isExpanded?: boolean;
     children?: TreeNode[];
+    onExpand?: (node: TreeNode) => void;
 }

@@ -96,13 +96,6 @@
     display: none !important;
   }
 
-  .mn-sidebar.sidebar-collapsed .folder-group>div {
-    justify-content: center;
-    padding-left: 0;
-    padding-right: 0;
-    margin-top: 4px;
-  }
-
   .mn-sidebar.sidebar-collapsed .main-icon {
     margin-right: 0 !important;
     width: 18px;
