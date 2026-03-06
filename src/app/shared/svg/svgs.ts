@@ -229,8 +229,10 @@ export class Svgs {
 
   static readonly circlePlus: SvgDefinition = {
     viewBox: "0 0 24 24",
-    fill: "currentColor",
-    body: `<path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4 11h-4v4h-2v-4H6v-2h4V7h2v4h4v2z" />`
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    body: `<circle cx="12" cy="12" r="9"></circle><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v8M8 12h8"></path>`
   };
 
   static readonly codeBrackets: SvgDefinition = {
