@@ -5,7 +5,7 @@ import { TitlebarComponent } from "../titlebar/titlebar.component";
 import { WorkspaceComponent } from "../workspace/workspace.component";
 
 @Component({
-  selector: "app-home",
+  selector: "mtx-home",
   standalone: true,
   imports: [TitlebarComponent, SidebarComponent, WorkspaceComponent, SettingsComponent],
   templateUrl: "./home.component.html"

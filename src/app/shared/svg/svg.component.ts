@@ -3,7 +3,7 @@ import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import { SvgDefinition, Svgs } from "./svgs";
 
 @Component({
-  selector: "app-svg",
+  selector: "mtx-svg",
   standalone: true,
   template: `
     <svg

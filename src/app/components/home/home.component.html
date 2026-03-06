@@ -4,12 +4,12 @@
   <div
     class="z-10 flex h-full w-full flex-col overflow-hidden rounded-none border border-white/40 bg-white/40 shadow-2xl shadow-black/10 backdrop-blur-[24px] dark:border-white/10 dark:bg-[rgba(30,30,35,0.75)] dark:shadow-black/50"
   >
-    <app-titlebar (openSettings)="openSettings()" />
+    <mtx-titlebar (openSettings)="openSettings()" />
     <div id="body" class="flex-1 flex overflow-hidden">
-      <app-sidebar />
-      <app-workspace />
+      <mtx-sidebar />
+      <mtx-workspace />
     </div>
   </div>
 
-  <app-settings [open]="isSettingsOpen()" (close)="closeSettings()" />
+  <mtx-settings [open]="isSettingsOpen()" (close)="closeSettings()" />
 </div>

@@ -3,7 +3,7 @@ import { FormsModule } from "@angular/forms";
 import { SvgComponent } from "../../shared/svg/svg.component";
 
 @Component({
-  selector: "app-markdown-editor",
+  selector: "mtx-markdown-editor",
   standalone: true,
   imports: [FormsModule, SvgComponent],
   host: {

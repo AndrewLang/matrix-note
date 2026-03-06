@@ -15,7 +15,7 @@ type TauriGlobal = {
 };
 
 @Component({
-  selector: "app-titlebar",
+  selector: "mtx-titlebar",
   standalone: true,
   imports: [SvgComponent],
   templateUrl: "./titlebar.component.html"

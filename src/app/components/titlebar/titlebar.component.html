@@ -1,18 +1,14 @@
 <div data-tauri-drag-region
   class="h-9 flex items-center justify-between flex-shrink-0 select-none w-full border-b border-black/5 dark:border-white/5">
-  <div class="flex items-center gap-2 pl-1 w-1/3">
-    <button data-no-drag data-tauri-drag-region="false" id="sidebar-toggle"
-      class="p-1.5 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors opacity-80 hover:opacity-100 flex-shrink-0">
-      <app-svg name="menu" svgClass="h-4 w-4 text-gray-700 dark:text-gray-300"></app-svg>
-    </button>
-    <app-svg name="appLogo" svgClass="h-4 w-4 shrink-0 text-blue-500"></app-svg>
+  <div class="flex items-center gap-2 pl-2 w-1/3">
+    <mtx-svg name="appLogo" svgClass="h-4 w-4 shrink-0 text-blue-500"></mtx-svg>
     <span class="text-xs font-semibold opacity-80 truncate">Matrix Note</span>
   </div>
 
   <div class="flex-1 flex justify-center h-full items-center">
     <div data-no-drag
       class="flex items-center bg-black/5 dark:bg-white/5 rounded-md w-[300px] h-6 px-2.5 text-[11px] border border-transparent hover:border-black/10 dark:hover:border-white/10 transition-colors">
-      <app-svg name="search" svgClass="mr-2 h-3 w-3 opacity-60"></app-svg>
+      <mtx-svg name="search" svgClass="mr-2 h-3 w-3 opacity-60"></mtx-svg>
       <input data-tauri-drag-region="false" type="text" placeholder="Search files, contents..."
         class="bg-transparent border-none text-inherit focus:outline-none w-full placeholder-gray-500 dark:placeholder-gray-400" />
     </div>
@@ -22,26 +18,26 @@
     <button data-no-drag data-tauri-drag-region="false" id="settings-btn" (click)="requestSettingsOpen()"
       class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors mr-1"
       title="Settings">
-      <app-svg name="settings" svgClass="h-4 w-4 text-gray-600 dark:text-gray-400"></app-svg>
+      <mtx-svg name="settings" svgClass="h-4 w-4 text-gray-600 dark:text-gray-400"></mtx-svg>
     </button>
     <button data-no-drag data-tauri-drag-region="false" id="theme-toggle" (click)="toggleTheme()"
       class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors mr-3"
       title="Toggle Theme">
-      <app-svg name="sun" svgClass="hidden h-4 w-4 text-yellow-300 dark:block"></app-svg>
-      <app-svg name="moon" svgClass="block h-4 w-4 text-indigo-500 dark:hidden"></app-svg>
+      <mtx-svg name="sun" svgClass="hidden h-4 w-4 text-yellow-300 dark:block"></mtx-svg>
+      <mtx-svg name="moon" svgClass="block h-4 w-4 text-indigo-500 dark:hidden"></mtx-svg>
     </button>
 
     <button data-no-drag data-tauri-drag-region="false" (click)="minimizeWindow()"
       class="w-10 h-full flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-      <app-svg name="windowMinimize" svgClass="h-2.5 w-2.5"></app-svg>
+      <mtx-svg name="windowMinimize" svgClass="h-2.5 w-2.5"></mtx-svg>
     </button>
     <button data-no-drag data-tauri-drag-region="false" (click)="toggleMaximizeWindow()"
       class="w-10 h-full flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-      <app-svg name="windowMaximize" svgClass="h-2.5 w-2.5"></app-svg>
+      <mtx-svg name="windowMaximize" svgClass="h-2.5 w-2.5"></mtx-svg>
     </button>
     <button data-no-drag data-tauri-drag-region="false" (click)="closeWindow()"
       class="w-10 h-full flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-red-500 hover:text-white transition-colors">
-      <app-svg name="windowClose" svgClass="h-2.5 w-2.5"></app-svg>
+      <mtx-svg name="windowClose" svgClass="h-2.5 w-2.5"></mtx-svg>
     </button>
   </div>
 </div>

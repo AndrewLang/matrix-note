@@ -5,7 +5,7 @@ import { SvgComponent } from "../../shared/svg/svg.component";
 type SettingsTab = "general" | "appearance" | "editor" | "about";
 
 @Component({
-  selector: "app-settings",
+  selector: "mtx-settings",
   standalone: true,
   imports: [NgClass, SvgComponent],
   templateUrl: "./settings.component.html"

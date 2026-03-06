@@ -11,7 +11,7 @@ type WorkspaceTab = {
 };
 
 @Component({
-  selector: "app-workspace",
+  selector: "mtx-workspace",
   standalone: true,
   imports: [NgClass, SvgComponent, WorkspaceTabComponent],
   host: {
