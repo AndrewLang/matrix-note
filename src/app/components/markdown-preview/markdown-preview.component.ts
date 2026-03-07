@@ -10,6 +10,7 @@ import {
   Output,
   PLATFORM_ID,
   SimpleChanges,
+  signal,
   ViewChild
 } from "@angular/core";
 import DOMPurify from "dompurify";
@@ -29,7 +30,7 @@ export class MarkdownPreviewComponent implements AfterViewInit, OnChanges {
   @Input() content = "";
   @Output() scrollProgressChange = new EventEmitter<number>();
 
-  renderedHtml = "";
+  readonly renderedHtml = signal("");
   private readonly isBrowser: boolean;
   private readonly markdown = new Marked({
     breaks: true,
@@ -93,13 +94,13 @@ export class MarkdownPreviewComponent implements AfterViewInit, OnChanges {
 
   private async renderContent(): Promise<void> {
     const html = await this.markdown.parse(this.content || "");
-    this.renderedHtml = DOMPurify.sanitize(html);
+    this.renderedHtml.set(DOMPurify.sanitize(html));
 
     if (!this.isBrowser || !this.previewRoot) {
       return;
     }
 
-    await new Promise<void>((resolve) => queueMicrotask(resolve));
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
     await this.renderMermaid();
   }
 

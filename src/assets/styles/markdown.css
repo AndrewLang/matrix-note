@@ -1,0 +1,32 @@
+.mn-codemirror-host .cm-editor,
+.mn-codemirror-host .cm-scroller,
+.mn-codemirror-host .cm-content,
+.mn-codemirror-host .cm-focused,
+.mn-codemirror-host .cm-editor *:focus,
+.mn-codemirror-host .cm-editor *:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.mn-codemirror-host .cm-editor {
+  height: 100%;
+  background: transparent;
+  color: rgb(31 41 55);
+}
+
+.dark .mn-codemirror-host .cm-editor {
+  color: rgb(243 244 246);
+}
+
+.mn-codemirror-host .cm-cursor,
+.mn-codemirror-host .cm-dropCursor {
+  border-left-color: currentColor;
+}
+
+.mn-codemirror-host .cm-selectionBackground {
+  background: rgba(59, 130, 246, 0.22) !important;
+}
+
+.mn-codemirror-host .cm-gutters {
+  display: none;
+}
