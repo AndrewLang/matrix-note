@@ -37,6 +37,14 @@ export class TreeComponent {
     node.onExpand?.(node);
   }
 
+  select(node: TreeNode): void {
+    if (this.hasChildren(node)) {
+      return;
+    }
+
+    node.onSelect?.(node);
+  }
+
   iconName(node: TreeNode): string {
     if (node.icon) {
       return node.icon;
