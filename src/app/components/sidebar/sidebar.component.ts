@@ -1,9 +1,9 @@
 import { Component, computed, inject } from "@angular/core";
 import { Command } from "../../models/command";
 import { TreeNode } from "../../models/tree";
-import { CommandService } from "../../services/command-service";
-import { NoteService } from "../../services/note-service";
-import { UiStateService } from "../../services/ui-state.service";
+import { CommandService } from "../../services/command.service";
+import { NoteService } from "../../services/note.service";
+import { UiStateService } from "../../services/uistate.service";
 import { WorkspaceService } from "../../services/workspace.service";
 import { TreeComponent } from "../tree/tree.component";
 import { SidebarActionsComponent } from "./sidebar.actions.component";

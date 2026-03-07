@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, ViewChild, inject } from "@angular/core";
 import { EditableDocument } from "../../../models/document";
-import { UiStateService } from "../../../services/ui-state.service";
+import { UiStateService } from "../../../services/uistate.service";
 import { MarkdownEditorComponent } from "../../markdown-editor/markdown-editor.component";
 import { MarkdownPreviewComponent } from "../../markdown-preview/markdown-preview.component";
 import {

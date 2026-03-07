@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from "@angular/core";
 import { EditableDocument } from "../models/document";
 import { Note } from "../models/note";
-import { NoteService } from "./note-service";
+import { NoteService } from "./note.service";
 
 @Injectable({
   providedIn: "root"
