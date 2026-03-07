@@ -10,7 +10,7 @@
       <mtx-svg name="document"
         [svgClass]="activeTabId() === tab.id ? 'h-3.5 w-3.5 text-blue-500' : 'h-3.5 w-3.5'"></mtx-svg>
       <span class="text-[13px] truncate flex-1">{{ tab.title }}</span>
-      @if (tab.unsaved) {
+      @if (tab.isDirty) {
       <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
       }
       <button (click)="closeTab(tab.id, $event)"
@@ -32,7 +32,7 @@
   <div class="flex-1 w-full h-full min-h-0 overflow-hidden flex flex-col relative">
     @for (tab of tabs(); track tab.id) {
     @if (activeTabId() === tab.id) {
-    <mtx-workspace-tab [content]="tab.content" />
+    <mtx-workspace-tab [document]="tab" (documentChange)="updateDocument($event)" />
     }
     }
   </div>

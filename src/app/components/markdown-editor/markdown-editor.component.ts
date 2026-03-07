@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { SvgComponent } from "../../shared/svg/svg.component";
 
@@ -13,4 +13,5 @@ import { SvgComponent } from "../../shared/svg/svg.component";
 })
 export class MarkdownEditorComponent {
   @Input() content = "";
+  @Output() contentChange = new EventEmitter<string>();
 }

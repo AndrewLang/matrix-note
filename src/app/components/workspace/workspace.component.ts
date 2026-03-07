@@ -1,14 +1,10 @@
 import { NgClass } from "@angular/common";
-import { Component, signal } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
+import { EditableDocument } from "../../models/document";
+import { Note } from "../../models/note";
+import { NoteService } from "../../services/note-service";
 import { SvgComponent } from "../../shared/svg/svg.component";
 import { WorkspaceTabComponent } from "./workspace-tab/workspace-tab.component";
-
-type WorkspaceTab = {
-  id: string;
-  title: string;
-  content: string;
-  unsaved: boolean;
-};
 
 @Component({
   selector: "mtx-workspace",
@@ -20,69 +16,24 @@ type WorkspaceTab = {
   templateUrl: "./workspace.component.html"
 })
 export class WorkspaceComponent {
-  readonly tabs = signal<WorkspaceTab[]>([
-    {
-      id: "architecture",
-      title: "Architecture.md",
-      unsaved: true,
-      content: `# Aero Design Architecture
+  private readonly noteService = inject(NoteService);
 
-## Core Philosophy
-We believe an application should look as responsive as it feels. Taking inspiration from glassmorphism, we build layers of frosted depth over vibrant backdrops.
+  readonly tabs = signal<EditableDocument[]>(this.createInitialTabs());
+  readonly activeTabId = signal<number | null>(this.tabs()[0]?.id ?? null);
 
-### Key Points:
-1. **Fluid Typography:** Scales nicely on high DPI displays.
-2. **Dynamic Theming:** Smooth transitions between \`Light Mode\` and \`Dark Mode\`.
-3. **Subtle Elevation:** Dropshadows and translucent borders define structure without clutter.
-
-\`\`\`js
-// The toggle orchestrator
-function switchTheme() {
-    document.documentElement.classList.toggle('dark');
-}
-\`\`\`
-
-> "Design is not just what it looks like and feels like. Design is how it works."
-> - *Steve Jobs*
-
-[View Figma Prototypes](https://figma.com/example)`
-    },
-    {
-      id: "design-system",
-      title: "Design-System.md",
-      unsaved: false,
-      content: `# Design System
-
-## Tokens
-- Colors
-- Typography
-- Spacing`
-    }
-  ]);
-
-  readonly activeTabId = signal("architecture");
-  private tabCount = 2;
-
-  selectTab(id: string): void {
+  selectTab(id: number): void {
     this.activeTabId.set(id);
   }
 
   addTab(): void {
-    this.tabCount += 1;
-    const id = `new-tab-${this.tabCount}`;
-    this.tabs.update((tabs) => [
-      ...tabs,
-      {
-        id,
-        title: `Untitled-${this.tabCount}.md`,
-        unsaved: false,
-        content: "# New Note\n\nStart writing..."
-      }
-    ]);
-    this.activeTabId.set(id);
+    const note = this.noteService.createNote();
+    const document = this.toEditableDocument(note);
+
+    this.tabs.update((tabs) => [...tabs, document]);
+    this.activeTabId.set(document.id);
   }
 
-  closeTab(id: string, event: MouseEvent): void {
+  closeTab(id: number, event: MouseEvent): void {
     event.stopPropagation();
     const current = this.tabs();
     const index = current.findIndex((tab) => tab.id === id);
@@ -98,11 +49,34 @@ function switchTheme() {
     }
 
     if (next.length === 0) {
-      this.activeTabId.set("");
+      this.activeTabId.set(null);
       return;
     }
 
     const fallbackIndex = Math.max(0, index - 1);
     this.activeTabId.set(next[fallbackIndex].id);
+  }
+
+  updateDocument(document: EditableDocument): void {
+    this.tabs.update((tabs) =>
+      tabs.map((tab) => (tab.id === document.id ? document : tab))
+    );
+    this.noteService.updateNoteContent(document.id, document.content);
+  }
+
+  private createInitialTabs(): EditableDocument[] {
+    return [3, 4]
+      .map((noteId) => this.noteService.getNoteById(noteId))
+      .filter((note): note is Note => note !== undefined)
+      .map((note) => this.toEditableDocument(note));
+  }
+
+  private toEditableDocument(note: Note): EditableDocument {
+    return {
+      id: note.id,
+      title: note.title,
+      content: note.content,
+      isDirty: false
+    };
   }
 }
