@@ -191,6 +191,22 @@ export class Svgs {
     body: `<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>`
   };
 
+  static readonly panelRight: SvgDefinition = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    body: `<rect x="3" y="4" width="18" height="16" rx="2"></rect><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16"></path>`
+  };
+
+  static readonly panelTop: SvgDefinition = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    body: `<rect x="3" y="4" width="18" height="16" rx="2"></rect><path stroke-linecap="round" stroke-linejoin="round" d="M3 11h18"></path>`
+  };
+
   static readonly chevronRight: SvgDefinition = {
     viewBox: "0 0 20 20",
     fill: "currentColor",
@@ -265,6 +281,8 @@ export class Svgs {
     link: Svgs.link,
     image: Svgs.image,
     preview: Svgs.preview,
+    panelRight: Svgs.panelRight,
+    panelTop: Svgs.panelTop,
     chevronRight: Svgs.chevronRight,
     folderSolid: Svgs.folderSolid,
     folderOutline: Svgs.folderOutline,

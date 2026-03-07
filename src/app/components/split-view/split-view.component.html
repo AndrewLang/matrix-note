@@ -1,0 +1,16 @@
+<div #container class="flex h-full min-h-0 w-full min-w-0"
+  [ngClass]="direction === 'horizontal' ? 'flex-row' : 'flex-col'">
+  <div class="flex min-h-0 min-w-0 shrink-0" [ngStyle]="primaryPaneStyle()">
+    <ng-container *ngTemplateOutlet="primaryPane?.templateRef ?? null"></ng-container>
+  </div>
+
+  <div class="shrink-0 select-none bg-black/5 transition-colors dark:bg-white/10" [ngClass]="
+      direction === 'horizontal'
+        ? 'h-full w-0.5 cursor-col-resize hover:bg-black/10 dark:hover:bg-white/15'
+        : 'h-0.5 w-full cursor-row-resize hover:bg-black/10 dark:hover:bg-white/15'
+    " (mousedown)="startDrag($event)"></div>
+
+  <div class="flex min-h-0 min-w-0 flex-1" [ngStyle]="secondaryPaneStyle()">
+    <ng-container *ngTemplateOutlet="secondaryPane?.templateRef ?? null"></ng-container>
+  </div>
+</div>

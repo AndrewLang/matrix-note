@@ -90,7 +90,33 @@ function switchTheme() {
 ## Tokens
 - Colors
 - Typography
-- Spacing`
+- Spacing
+
+## Example Component
+
+\`\`\`ts
+type ButtonVariant = "primary" | "secondary";
+
+export function getButtonClass(variant: ButtonVariant): string {
+  return variant === "primary"
+    ? "bg-blue-500 text-white hover:bg-blue-600"
+    : "bg-slate-100 text-slate-900 hover:bg-slate-200";
+}
+\`\`\`
+
+## Token Flow
+
+\`\`\`mermaid
+flowchart LR
+  A[Design Tokens] --> B[Theme Variables]
+  B --> C[Component Variants]
+  C --> D[Workspace UI]
+\`\`\`
+
+## Guidelines
+- Keep spacing values on a 4px scale.
+- Use semantic color tokens in components.
+- Prefer shared variants over one-off styles.`
     ),
     this.createSeedNote(5, "Assets/", 2, "", "cloud"),
     this.createSeedNote(7, "routes.rs", 6, "", "circlePlus", "text-[#e34c26]"),
