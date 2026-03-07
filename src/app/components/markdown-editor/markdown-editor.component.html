@@ -1,4 +1,33 @@
-<div
-  class="mn-codemirror-host flex-1 min-h-0 overflow-hidden rounded-md border border-transparent bg-transparent">
-  <div #editorRoot class="h-full min-h-0 w-full"></div>
+<div class="relative flex-1 min-h-0 w-full">
+  <div
+    class="mn-codemirror-host flex h-full min-h-0 overflow-hidden rounded-md border border-transparent bg-transparent">
+    <div #editorRoot class="h-full min-h-0 w-full"></div>
+  </div>
+
+  <div class="pointer-events-none absolute bottom-8 right-8 z-10 h-10 w-10">
+    @if (isAiPromptOpen()) {
+    <div class="pointer-events-auto absolute right-12 top-0 flex 
+             h-10 w-80 items-center rounded-full border 
+             border-black/10 bg-white/90 px-4 shadow-lg 
+             shadow-black/10 backdrop-blur-sm transition-all 
+             duration-200 dark:border-white/10 dark:bg-slate-900/90 dark:shadow-black/30">
+      <input type="text" placeholder="Ask AI to draft markdown..."
+        class="w-full border-0 bg-transparent px-0 py-0 text-sm text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500" />
+    </div>
+    }
+
+    <button type="button" class="pointer-events-auto absolute right-0 top-0 inline-flex 
+            h-10 w-10 items-center justify-center rounded-full shadow-xl
+            shadow-black/20 transition-colors dark:shadow-black/50" [class.bg-blue-600]="!isAiPromptOpen()"
+      [class.text-white]="!isAiPromptOpen()" [class.hover:bg-blue-500]="!isAiPromptOpen()"
+      [class.border]="isAiPromptOpen()" [class.border-black/10]="isAiPromptOpen()"
+      [class.bg-white/90]="isAiPromptOpen()" [class.text-slate-500]="isAiPromptOpen()"
+      [class.backdrop-blur-sm]="isAiPromptOpen()" [class.hover:bg-black/5]="isAiPromptOpen()"
+      [class.hover:text-slate-800]="isAiPromptOpen()" [class.dark:border-white/10]="isAiPromptOpen()"
+      [class.dark:bg-slate-900/90]="isAiPromptOpen()" [class.dark:text-slate-300]="isAiPromptOpen()"
+      [class.dark:hover:bg-white/10]="isAiPromptOpen()" [class.dark:hover:text-white]="isAiPromptOpen()"
+      (click)="toggleAiPrompt()" [attr.aria-label]="isAiPromptOpen() ? 'Collapse AI prompt' : 'Open AI prompt'">
+      <mtx-svg [name]="isAiPromptOpen() ? 'chevronRight' : 'sparkles'" svgClass="h-4 w-4"></mtx-svg>
+    </button>
+  </div>
 </div>

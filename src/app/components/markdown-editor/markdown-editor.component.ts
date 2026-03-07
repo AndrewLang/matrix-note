@@ -10,6 +10,7 @@ import {
   OnDestroy,
   Output,
   PLATFORM_ID,
+  signal,
   SimpleChanges,
   ViewChild
 } from "@angular/core";
@@ -18,9 +19,11 @@ import { EditorState } from "@codemirror/state";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { EditorView } from "@codemirror/view";
 import { basicSetup } from "codemirror";
+import { SvgComponent } from "../../shared/svg/svg.component";
 
 @Component({
   selector: "mtx-markdown-editor",
+  imports: [SvgComponent],
   host: {
     class: "flex h-full min-h-0 w-full flex-1 flex-col"
   },
@@ -32,6 +35,7 @@ export class MarkdownEditorComponent implements AfterViewInit, OnChanges, OnDest
   @Output() contentChange = new EventEmitter<string>();
   @Output() scrollProgressChange = new EventEmitter<number>();
 
+  protected readonly isAiPromptOpen = signal(false);
   private editorView: EditorView | null = null;
   private readonly isBrowser: boolean;
   private lastKnownContent = "";
@@ -119,6 +123,10 @@ export class MarkdownEditorComponent implements AfterViewInit, OnChanges, OnDest
 
     const maxScrollTop = container.scrollHeight - container.clientHeight;
     container.scrollTop = maxScrollTop > 0 ? maxScrollTop * progress : 0;
+  }
+
+  toggleAiPrompt(): void {
+    this.isAiPromptOpen.update((open) => !open);
   }
 
   private async mountEditor(content: string): Promise<void> {

@@ -257,6 +257,14 @@ export class Svgs {
     body: `<path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>`
   };
 
+  static readonly sparkles: SvgDefinition = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    body: `<path stroke-linecap="round" stroke-linejoin="round" d="M12 3l1.7 4.8L18.5 9.5l-4.8 1.7L12 16l-1.7-4.8L5.5 9.5l4.8-1.7L12 3z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M19 3v4M21 5h-4M5 16v5M7.5 18.5h-5"></path>`
+  };
+
   private static readonly registry: Record<string, SvgDefinition> = {
     menu: Svgs.menu,
     "layout-sidebar-inset": Svgs.layoutSidebarInset,
@@ -289,7 +297,8 @@ export class Svgs {
     document: Svgs.document,
     cloud: Svgs.cloud,
     circlePlus: Svgs.circlePlus,
-    codeBrackets: Svgs.codeBrackets
+    codeBrackets: Svgs.codeBrackets,
+    sparkles: Svgs.sparkles
   };
 
   static get(name: string): SvgDefinition | null {
