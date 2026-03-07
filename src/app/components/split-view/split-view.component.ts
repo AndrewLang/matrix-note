@@ -20,7 +20,7 @@ import {
   standalone: true
 })
 export class SplitPrimaryDirective {
-  constructor(readonly templateRef: TemplateRef<unknown>) {}
+  constructor(readonly templateRef: TemplateRef<unknown>) { }
 }
 
 @Directive({
@@ -28,12 +28,11 @@ export class SplitPrimaryDirective {
   standalone: true
 })
 export class SplitSecondaryDirective {
-  constructor(readonly templateRef: TemplateRef<unknown>) {}
+  constructor(readonly templateRef: TemplateRef<unknown>) { }
 }
 
 @Component({
   selector: "mtx-split-view",
-  standalone: true,
   imports: [NgClass, NgStyle, NgTemplateOutlet],
   host: {
     class: "flex h-full min-h-0 w-full min-w-0"

@@ -5,7 +5,6 @@ import { SvgComponent } from "../../shared/svg/svg.component";
 
 @Component({
   selector: "mtx-dialog",
-  standalone: true,
   imports: [NgClass, NgComponentOutlet, SvgComponent],
   templateUrl: "./dialog.component.html"
 })

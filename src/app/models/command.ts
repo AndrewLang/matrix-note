@@ -3,6 +3,7 @@ export interface Command {
   name: string;
   description?: string;
   icon?: string;
+  active?: boolean;
   canExecute?: boolean;
   action: () => void;
 }

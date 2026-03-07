@@ -4,7 +4,6 @@ import { SvgComponent } from "../../shared/svg/svg.component";
 
 @Component({
   selector: "mtx-sidebar-actions",
-  standalone: true,
   imports: [SvgComponent],
   templateUrl: "./sidebar.actions.component.html"
 })

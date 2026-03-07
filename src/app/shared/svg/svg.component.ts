@@ -4,7 +4,6 @@ import { SvgDefinition, Svgs } from "./svgs";
 
 @Component({
   selector: "mtx-svg",
-  standalone: true,
   template: `
     <svg
       [attr.viewBox]="icon?.viewBox"

@@ -5,12 +5,11 @@ import { CommandService } from "../../services/command-service";
 import { NoteService } from "../../services/note-service";
 import { UiStateService } from "../../services/ui-state.service";
 import { WorkspaceService } from "../../services/workspace.service";
-import { SidebarActionsComponent } from "./sidebar.actions.component";
 import { TreeComponent } from "../tree/tree.component";
+import { SidebarActionsComponent } from "./sidebar.actions.component";
 
 @Component({
   selector: "mtx-sidebar",
-  standalone: true,
   imports: [SidebarActionsComponent, TreeComponent],
   templateUrl: "./sidebar.component.html"
 })

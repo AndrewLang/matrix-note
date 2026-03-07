@@ -1,6 +1,6 @@
-import { NgClass } from "@angular/common";
-import { Component, EventEmitter, Input, Output, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Input, Output, ViewChild, inject } from "@angular/core";
 import { EditableDocument } from "../../../models/document";
+import { UiStateService } from "../../../services/ui-state.service";
 import { MarkdownEditorComponent } from "../../markdown-editor/markdown-editor.component";
 import { MarkdownPreviewComponent } from "../../markdown-preview/markdown-preview.component";
 import {
@@ -8,19 +8,15 @@ import {
   SplitSecondaryDirective,
   SplitViewComponent
 } from "../../split-view/split-view.component";
-import { SvgComponent } from "../../../shared/svg/svg.component";
 
 @Component({
   selector: "mtx-workspace-tab",
-  standalone: true,
   imports: [
-    NgClass,
     MarkdownEditorComponent,
     MarkdownPreviewComponent,
     SplitViewComponent,
     SplitPrimaryDirective,
-    SplitSecondaryDirective,
-    SvgComponent
+    SplitSecondaryDirective
   ],
   host: {
     class: "flex h-full min-h-0 w-full flex-1 flex-col"
@@ -28,13 +24,14 @@ import { SvgComponent } from "../../../shared/svg/svg.component";
   templateUrl: "./workspace-tab.component.html"
 })
 export class WorkspaceTabComponent {
+  private readonly uiStateService = inject(UiStateService);
   @ViewChild(MarkdownEditorComponent) private editor?: MarkdownEditorComponent;
   @ViewChild(MarkdownPreviewComponent) private preview?: MarkdownPreviewComponent;
   @Input({ required: true }) document!: EditableDocument;
   @Output() documentChange = new EventEmitter<EditableDocument>();
 
-  protected showPreview = true;
-  protected previewPlacement: "right" | "top" = "right";
+  protected readonly showPreview = this.uiStateService.isPreviewVisible;
+  protected readonly previewPlacement = this.uiStateService.previewPlacement;
   protected splitRatio = 0.5;
   private syncingScroll = false;
 
@@ -46,21 +43,12 @@ export class WorkspaceTabComponent {
     });
   }
 
-  protected togglePreview(): void {
-    this.showPreview = !this.showPreview;
-  }
-
-  protected setPreviewPlacement(placement: "right" | "top"): void {
-    this.previewPlacement = placement;
-    this.splitRatio = 0.5;
-  }
-
   protected updateSplitRatio(ratio: number): void {
     this.splitRatio = ratio;
   }
 
   protected syncFromEditor(progress: number): void {
-    if (!this.showPreview) {
+    if (!this.showPreview()) {
       return;
     }
 
@@ -72,7 +60,7 @@ export class WorkspaceTabComponent {
   }
 
   protected splitDirection(): "horizontal" | "vertical" {
-    return this.previewPlacement === "right" ? "horizontal" : "vertical";
+    return this.previewPlacement() === "right" ? "horizontal" : "vertical";
   }
 
   private syncScroll(target: "editor" | "preview", progress: number): void {

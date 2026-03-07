@@ -6,7 +6,6 @@ type SettingsTab = "general" | "appearance" | "editor" | "about";
 
 @Component({
   selector: "mtx-settings",
-  standalone: true,
   imports: [NgClass, SvgComponent],
   templateUrl: "./settings.component.html"
 })

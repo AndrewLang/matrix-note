@@ -1,42 +1,8 @@
 <div class="flex h-full min-h-0 w-full flex-col">
-  <div class="flex items-center justify-between border-b border-black/5 px-3 py-2 dark:border-white/5">
-    <div class="truncate text-sm font-medium text-slate-700 dark:text-slate-200">
-      {{ document.title }}
-    </div>
-
-    <div class="flex items-center gap-1">
-      <button type="button"
-        class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-black/[0.06] hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-100"
-        [ngClass]="showPreview? 'bg-black/[0.08] text-slate-900 dark:bg-white/10 dark:text-slate-100' : 'text-slate-500 hover:bg-black/[0.06] hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-100'"
-        [attr.aria-pressed]="showPreview" [title]="showPreview ? 'Hide preview' : 'Show preview'"
-        (click)="togglePreview()">
-        <mtx-svg name="preview" svgClass="h-4 w-4"></mtx-svg>
-      </button>
-
-      <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors"
-        [ngClass]="
-          previewPlacement === 'right'
-            ? 'bg-black/[0.08] text-slate-900 dark:bg-white/10 dark:text-slate-100'
-            : 'text-slate-500 hover:bg-black/[0.06] hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-100'
-        " title="Preview on right" (click)="setPreviewPlacement('right')">
-        <mtx-svg name="panelRight" svgClass="h-4 w-4"></mtx-svg>
-      </button>
-
-      <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors"
-        [ngClass]="
-          previewPlacement === 'top'
-            ? 'bg-black/[0.08] text-slate-900 dark:bg-white/10 dark:text-slate-100'
-            : 'text-slate-500 hover:bg-black/[0.06] hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-100'
-        " title="Preview on top" (click)="setPreviewPlacement('top')">
-        <mtx-svg name="panelTop" svgClass="h-4 w-4"></mtx-svg>
-      </button>
-    </div>
-  </div>
-
-  @if (showPreview) {
+  @if (showPreview()) {
   <mtx-split-view class="flex-1" [direction]="splitDirection()" [primarySize]="splitRatio" [minPrimarySize]="0.25"
     [minSecondarySize]="0.25" (primarySizeChange)="updateSplitRatio($event)">
-    @if (previewPlacement === "right") {
+    @if (previewPlacement() === "right") {
     <ng-template splitPrimary>
       <div class="flex h-full min-h-0 min-w-0 flex-1">
         <mtx-markdown-editor [content]="document.content" (contentChange)="updateContent($event)"

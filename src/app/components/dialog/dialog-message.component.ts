@@ -2,7 +2,6 @@ import { Component, input } from "@angular/core";
 
 @Component({
   selector: "mtx-dialog-message",
-  standalone: true,
   template: `
     <div class="space-y-2 p-4 text-sm text-gray-700 dark:text-gray-200">
       @if (message()) {

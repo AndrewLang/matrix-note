@@ -1,14 +1,13 @@
 import { Component, inject } from "@angular/core";
+import { DialogService } from "../../services/dialog.service";
 import { DialogComponent } from "../dialog/dialog.component";
 import { SettingsComponent } from "../settings/settings.component";
 import { SidebarComponent } from "../sidebar/sidebar.component";
 import { TitlebarComponent } from "../titlebar/titlebar.component";
 import { WorkspaceComponent } from "../workspace/workspace.component";
-import { DialogService } from "../../services/dialog.service";
 
 @Component({
   selector: "mtx-home",
-  standalone: true,
   imports: [DialogComponent, TitlebarComponent, SidebarComponent, WorkspaceComponent],
   templateUrl: "./home.component.html"
 })

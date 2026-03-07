@@ -12,13 +12,13 @@ import {
   SimpleChanges,
   ViewChild
 } from "@angular/core";
-import { marked } from "marked";
 import DOMPurify from "dompurify";
+import hljs from "highlight.js";
+import { Marked, Tokens } from "marked";
 import mermaid from "mermaid";
 
 @Component({
   selector: "mtx-markdown-preview",
-  standalone: true,
   host: {
     class: "flex h-full min-h-0 w-full flex-1"
   },
@@ -31,14 +31,30 @@ export class MarkdownPreviewComponent implements AfterViewInit, OnChanges {
 
   renderedHtml = "";
   private readonly isBrowser: boolean;
+  private readonly markdown = new Marked({
+    breaks: true,
+    gfm: true
+  });
   private mermaidInitialized = false;
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
     this.isBrowser = isPlatformBrowser(platformId);
+    this.markdown.use({
+      renderer: {
+        code: ({ text, lang }: Tokens.Code): string => {
+          const language = (lang || "").trim().toLowerCase();
+          if (language === "mermaid") {
+            return `<pre><code class="language-mermaid">${this.escapeHtml(text)}</code></pre>`;
+          }
 
-    marked.setOptions({
-      breaks: true,
-      gfm: true
+          const highlighted = language && hljs.getLanguage(language)
+            ? hljs.highlight(text, { language }).value
+            : this.escapeHtml(text);
+          const className = language ? `hljs language-${language}` : "hljs";
+
+          return `<pre><code class="${className}">${highlighted}</code></pre>`;
+        }
+      }
     });
   }
 
@@ -76,7 +92,7 @@ export class MarkdownPreviewComponent implements AfterViewInit, OnChanges {
   }
 
   private async renderContent(): Promise<void> {
-    const html = await marked.parse(this.content || "");
+    const html = await this.markdown.parse(this.content || "");
     this.renderedHtml = DOMPurify.sanitize(html);
 
     if (!this.isBrowser || !this.previewRoot) {
@@ -124,5 +140,14 @@ export class MarkdownPreviewComponent implements AfterViewInit, OnChanges {
         // Preserve the markdown code block if Mermaid fails to render.
       }
     }
+  }
+
+  private escapeHtml(value: string): string {
+    return value
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
   }
 }

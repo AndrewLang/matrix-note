@@ -4,7 +4,6 @@ import { SvgComponent } from "../../shared/svg/svg.component";
 
 @Component({
   selector: "mtx-tree",
-  standalone: true,
   imports: [SvgComponent, TreeComponent],
   templateUrl: "./tree.component.html"
 })

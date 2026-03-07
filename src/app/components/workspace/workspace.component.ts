@@ -1,15 +1,17 @@
 import { NgClass } from "@angular/common";
 import { Component, inject } from "@angular/core";
-import { DialogMessageComponent } from "../dialog/dialog-message.component";
+import { Command } from "../../models/command";
 import { EditableDocument } from "../../models/document";
+import { CommandService } from "../../services/command-service";
 import { DialogService } from "../../services/dialog.service";
+import { UiStateService } from "../../services/ui-state.service";
 import { WorkspaceService } from "../../services/workspace.service";
 import { SvgComponent } from "../../shared/svg/svg.component";
+import { DialogMessageComponent } from "../dialog/dialog-message.component";
 import { WorkspaceTabComponent } from "./workspace-tab/workspace-tab.component";
 
 @Component({
   selector: "mtx-workspace",
-  standalone: true,
   imports: [NgClass, SvgComponent, WorkspaceTabComponent],
   host: {
     class: "flex-1 min-w-0 min-h-0 w-full h-full flex"
@@ -17,11 +19,29 @@ import { WorkspaceTabComponent } from "./workspace-tab/workspace-tab.component";
   templateUrl: "./workspace.component.html"
 })
 export class WorkspaceComponent {
+  private readonly commandService = inject(CommandService);
   private readonly dialogService = inject(DialogService);
+  private readonly uiStateService = inject(UiStateService);
   private readonly workspaceService = inject(WorkspaceService);
 
   readonly tabs = this.workspaceService.tabs;
   readonly activeTabId = this.workspaceService.activeTabId;
+  readonly isPreviewVisible = this.uiStateService.isPreviewVisible;
+  readonly previewPlacement = this.uiStateService.previewPlacement;
+
+  get previewCommands(): Command[] {
+    return this.commandService.createWorkspacePreviewCommands(
+      {
+        togglePreview: () => this.uiStateService.togglePreview(),
+        showPreviewOnRight: () => this.uiStateService.setPreviewPlacement("right"),
+        showPreviewOnTop: () => this.uiStateService.setPreviewPlacement("top")
+      },
+      {
+        showPreview: this.isPreviewVisible(),
+        previewPlacement: this.previewPlacement()
+      }
+    );
+  }
 
   selectTab(id: number): void {
     this.workspaceService.selectTab(id);
