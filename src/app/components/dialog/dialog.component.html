@@ -1,0 +1,39 @@
+@if (activeDialog(); as dialog) {
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+  (click)="onBackdropClick($event)">
+  <div
+    class="relative flex w-full max-w-[640px] flex-col overflow-hidden rounded-xl border border-white/40 bg-white/40 shadow-2xl shadow-black/10 backdrop-blur-[24px] dark:border-white/10 dark:bg-[rgba(30,30,35,0.75)] dark:shadow-black/50"
+    [ngClass]="dialog.config.dialogClass">
+    @if (dialog.config.title || dialog.config.closable) {
+    <div
+      class="flex h-12 items-center justify-between border-b border-black/5 bg-white/30 px-4 backdrop-blur-md dark:border-white/5 dark:bg-black/20">
+      <h2 class="truncate text-sm font-semibold">{{ dialog.config.title }}</h2>
+      @if (dialog.config.closable) {
+      <button type="button" (click)="close()"
+        class="flex h-7 w-7 items-center justify-center rounded-md transition-colors hover:bg-black/10 dark:hover:bg-white/10"
+        aria-label="Close dialog">
+        <mtx-svg name="close" svgClass="h-4 w-4"></mtx-svg>
+      </button>
+      }
+    </div>
+    }
+
+    <div class="min-h-0 flex-1 overflow-auto" [ngClass]="dialog.config.bodyClass">
+      <ng-container *ngComponentOutlet="dialog.component; inputs: dialog.config.componentInputs"></ng-container>
+    </div>
+
+    @if (dialog.config.buttons.length > 0) {
+    <div class="flex items-center justify-end gap-2 border-t border-black/5 px-4 py-3 dark:border-white/5">
+      @for (button of dialog.config.buttons; track button.id) {
+      <button type="button" [disabled]="button.disabled" (click)="runButton(button)"
+        class="rounded-md px-3 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+        [ngClass]="buttonClass(button)">
+        {{ button.label }}
+      </button>
+      }
+    </div>
+    }
+  </div>
+</div>
+}

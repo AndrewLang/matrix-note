@@ -1,5 +1,5 @@
 import { NgClass } from "@angular/common";
-import { Component, EventEmitter, HostListener, Input, Output, signal } from "@angular/core";
+import { Component, signal } from "@angular/core";
 import { SvgComponent } from "../../shared/svg/svg.component";
 
 type SettingsTab = "general" | "appearance" | "editor" | "about";
@@ -11,9 +11,6 @@ type SettingsTab = "general" | "appearance" | "editor" | "about";
   templateUrl: "./settings.component.html"
 })
 export class SettingsComponent {
-  @Input({ required: true }) open = false;
-  @Output() readonly close = new EventEmitter<void>();
-
   readonly activeTab = signal<SettingsTab>("general");
 
   readonly tabs: Array<{ id: SettingsTab; label: string; bottom?: boolean }> = [
@@ -25,22 +22,5 @@ export class SettingsComponent {
 
   selectTab(tab: SettingsTab): void {
     this.activeTab.set(tab);
-  }
-
-  closeModal(): void {
-    this.close.emit();
-  }
-
-  onBackdropClick(event: MouseEvent): void {
-    if (event.target === event.currentTarget) {
-      this.closeModal();
-    }
-  }
-
-  @HostListener("document:keydown.escape")
-  onEscape(): void {
-    if (this.open) {
-      this.closeModal();
-    }
   }
 }
