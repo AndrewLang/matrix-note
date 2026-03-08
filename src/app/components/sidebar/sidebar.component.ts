@@ -28,15 +28,23 @@ export class SidebarComponent {
   });
 
   createNote(): void {
-    this.noteService.createNote();
+    void this.workspaceService.createNoteTab();
   }
 
   createFolder(): void {
-    this.noteService.createCategory();
+    void this.createCategory();
   }
 
   toggleSidebar(): void {
     this.uiStateService.toggleSidebar();
+  }
+
+  private async createCategory(): Promise<void> {
+    try {
+      await this.noteService.createCategory();
+    } catch (error) {
+      console.error("Failed to create category.", error);
+    }
   }
 
   private bindDocumentSelection(nodes: TreeNode[]): TreeNode[] {
@@ -44,6 +52,7 @@ export class SidebarComponent {
       if (Array.isArray(node.children)) {
         return {
           ...node,
+          onDrop: (draggedNode, targetNode) => this.handleDrop(draggedNode, targetNode),
           children: this.bindDocumentSelection(node.children)
         };
       }
@@ -53,5 +62,22 @@ export class SidebarComponent {
         onSelect: () => this.workspaceService.openNote(node.id)
       };
     });
+  }
+
+  private async handleDrop(draggedNode: TreeNode, targetNode: TreeNode): Promise<void> {
+    if (targetNode.type !== "category" || draggedNode.id === targetNode.id) {
+      return;
+    }
+
+    try {
+      if (draggedNode.type === "note") {
+        await this.noteService.moveNote(draggedNode.id, targetNode.id);
+        return;
+      }
+
+      await this.noteService.moveCategory(draggedNode.id, targetNode.id);
+    } catch (error) {
+      console.error("Failed to move sidebar node.", error);
+    }
   }
 }

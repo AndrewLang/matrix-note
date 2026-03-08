@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output, ViewChild, inject } from "@angular/core";
+import { ViewOrientations } from "@app/models/uistates";
 import { EditableDocument } from "../../../models/document";
 import { UiStateService } from "../../../services/uistate.service";
 import { MarkdownEditorComponent } from "../../markdown-editor/markdown-editor.component";
@@ -31,6 +32,7 @@ export class WorkspaceTabComponent {
   @Output() documentChange = new EventEmitter<EditableDocument>();
 
   protected readonly showPreview = this.uiStateService.isPreviewVisible;
+  protected readonly showEditor = this.uiStateService.isEditorVisible;
   protected readonly previewPlacement = this.uiStateService.previewPlacement;
   protected splitRatio = 0.5;
   private syncingScroll = false;
@@ -60,7 +62,11 @@ export class WorkspaceTabComponent {
   }
 
   protected splitDirection(): "horizontal" | "vertical" {
-    return this.previewPlacement() === "right" ? "horizontal" : "vertical";
+    return this.previewPlacement() === ViewOrientations.Horizontal ? "horizontal" : "vertical";
+  }
+
+  protected showSplitView(): boolean {
+    return this.showPreview() && this.showEditor();
   }
 
   private syncScroll(target: "editor" | "preview", progress: number): void {

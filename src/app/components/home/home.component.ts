@@ -1,5 +1,6 @@
 import { Component, inject } from "@angular/core";
 import { DialogService } from "../../services/dialog.service";
+import { NoteService } from "../../services/note.service";
 import { DialogComponent } from "../dialog/dialog.component";
 import { SettingsComponent } from "../settings/settings.component";
 import { SidebarComponent } from "../sidebar/sidebar.component";
@@ -13,6 +14,11 @@ import { WorkspaceComponent } from "../workspace/workspace.component";
 })
 export class HomeComponent {
   private readonly dialogService = inject(DialogService);
+  private readonly noteService = inject(NoteService);
+
+  constructor() {
+    void this.loadInitialData();
+  }
 
   openSettings(): void {
     this.dialogService.open(SettingsComponent, {
@@ -22,5 +28,16 @@ export class HomeComponent {
       closeOnEscape: true,
       dialogClass: "max-w-[700px] h-[500px]"
     });
+  }
+
+  private async loadInitialData(): Promise<void> {
+    try {
+      await Promise.all([
+        this.noteService.loadCategories(),
+        this.noteService.loadNotes()
+      ]);
+    } catch (error) {
+      console.error("Failed to load notes.", error);
+    }
   }
 }

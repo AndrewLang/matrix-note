@@ -1,8 +1,8 @@
 <div class="flex h-full min-h-0 w-full flex-col">
-  @if (showPreview()) {
+  @if (showSplitView()) {
   <mtx-split-view class="flex-1" [direction]="splitDirection()" [primarySize]="splitRatio" [minPrimarySize]="0.25"
     [minSecondarySize]="0.25" (primarySizeChange)="updateSplitRatio($event)">
-    @if (previewPlacement() === "right") {
+    @if (previewPlacement() === "horizontal") {
     <ng-template splitPrimary>
       <div class="flex h-full min-h-0 min-w-0 flex-1">
         <mtx-markdown-editor [content]="document.content" (contentChange)="updateContent($event)"
@@ -30,6 +30,15 @@
     </ng-template>
     }
   </mtx-split-view>
+  } @else if (showEditor()) {
+  <div class="flex min-h-0 min-w-0 flex-1">
+    <mtx-markdown-editor [content]="document.content" (contentChange)="updateContent($event)"
+      (scrollProgressChange)="syncFromEditor($event)" />
+  </div>
+  } @else if (showPreview()) {
+  <div class="min-h-0 min-w-0 h-full flex-1 overflow-hidden bg-white/10 dark:bg-black/10">
+    <mtx-markdown-preview [content]="document.content" (scrollProgressChange)="syncFromPreview($event)" />
+  </div>
   } @else {
   <div class="flex min-h-0 min-w-0 flex-1">
     <mtx-markdown-editor [content]="document.content" (contentChange)="updateContent($event)" />

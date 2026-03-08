@@ -31,7 +31,7 @@
     </div>
 
     <div class="ml-1 flex h-full shrink-0 items-center gap-0.5 pl-1">
-      @for (command of previewCommands; track command.id) {
+      @for (command of workspaceNoteCommands; track command.id) {
       <button type="button" class="inline-flex h-6 w-6 items-center justify-center rounded-md transition-colors"
         [ngClass]="
           command.active

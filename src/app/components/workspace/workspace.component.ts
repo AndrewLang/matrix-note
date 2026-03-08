@@ -2,6 +2,7 @@ import { NgClass } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { Command } from "../../models/command";
 import { EditableDocument } from "../../models/document";
+import { ViewOrientation, ViewOrientations } from "../../models/uistates";
 import { CommandService } from "../../services/command.service";
 import { DialogService } from "../../services/dialog.service";
 import { UiStateService } from "../../services/uistate.service";
@@ -27,18 +28,20 @@ export class WorkspaceComponent {
   readonly tabs = this.workspaceService.tabs;
   readonly activeTabId = this.workspaceService.activeTabId;
   readonly isPreviewVisible = this.uiStateService.isPreviewVisible;
+  readonly isEditorVisible = this.uiStateService.isEditorVisible;
   readonly previewPlacement = this.uiStateService.previewPlacement;
 
-  get previewCommands(): Command[] {
-    return this.commandService.createWorkspacePreviewCommands(
+  get workspaceNoteCommands(): Command[] {
+    return this.commandService.createWorkspaceNoteCommands(
       {
         toggleEditor: () => this.uiStateService.toggleEditor(),
         togglePreview: () => this.uiStateService.togglePreview(),
-        showPreviewOnRight: () => this.uiStateService.setPreviewPlacement("right"),
-        showPreviewOnTop: () => this.uiStateService.setPreviewPlacement("top")
+        showPreviewOnRight: () => this.uiStateService.setPreviewPlacement(ViewOrientations.Horizontal),
+        showPreviewOnTop: () => this.uiStateService.setPreviewPlacement(ViewOrientations.Vertical)
       },
       {
         showPreview: this.isPreviewVisible(),
+        showEditor: this.isEditorVisible(),
         previewPlacement: this.previewPlacement()
       }
     );
@@ -49,7 +52,7 @@ export class WorkspaceComponent {
   }
 
   addTab(): void {
-    this.workspaceService.createNoteTab();
+    void this.workspaceService.createNoteTab();
   }
 
   closeTab(id: number, event: MouseEvent): void {
@@ -94,5 +97,9 @@ export class WorkspaceComponent {
 
   updateDocument(document: EditableDocument): void {
     this.workspaceService.updateDocument(document);
+  }
+
+  setPreviewPlacement(orientation: ViewOrientation): void {
+    this.uiStateService.setPreviewPlacement(orientation);
   }
 }

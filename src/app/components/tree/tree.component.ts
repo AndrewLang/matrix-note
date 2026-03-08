@@ -12,6 +12,7 @@ export class TreeComponent {
   readonly depth = input(0);
 
   private readonly indentation = 20;
+  protected hoveredDropNodeId: number | null = null;
 
   readonly childPadding = computed(() => `${this.depth() === 0 ? this.indentation : this.indentation + 4}px`);
 
@@ -61,5 +62,93 @@ export class TreeComponent {
     return this.hasChildren(node)
       ? "text-gray-700 dark:text-gray-300"
       : "text-gray-600 dark:text-gray-400";
+  }
+
+  isDraggable(node: TreeNode): boolean {
+    return node.type === "note" || node.type === "category";
+  }
+
+  isDropTarget(node: TreeNode): boolean {
+    return this.hoveredDropNodeId === node.id;
+  }
+
+  canDropOn(node: TreeNode): boolean {
+    return node.type === "category";
+  }
+
+  startDrag(event: DragEvent, node: TreeNode): void {
+    if (!this.isDraggable(node)) {
+      return;
+    }
+
+    event.stopPropagation();
+    const payload = JSON.stringify({
+      id: node.id,
+      type: node.type
+    });
+    event.dataTransfer?.setData("application/x-matrix-note-node", payload);
+    event.dataTransfer?.setData("text/plain", payload);
+
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = "move";
+    }
+  }
+
+  endDrag(): void {
+    this.hoveredDropNodeId = null;
+  }
+
+  dragOver(event: DragEvent, node: TreeNode): void {
+    if (!this.canDropOn(node)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    this.hoveredDropNodeId = node.id;
+
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = "move";
+    }
+  }
+
+  dragLeave(event: DragEvent, node: TreeNode): void {
+    event.stopPropagation();
+
+    if (this.hoveredDropNodeId === node.id) {
+      this.hoveredDropNodeId = null;
+    }
+  }
+
+  drop(event: DragEvent, targetNode: TreeNode): void {
+    const draggedNode = this.readDraggedNode(event);
+    this.hoveredDropNodeId = null;
+
+    if (!draggedNode || !this.canDropOn(targetNode)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    targetNode.onDrop?.(draggedNode, targetNode);
+  }
+
+  private readDraggedNode(event: DragEvent): TreeNode | null {
+    const payload = event.dataTransfer?.getData("application/x-matrix-note-node")
+      || event.dataTransfer?.getData("text/plain");
+    if (!payload) {
+      return null;
+    }
+
+    try {
+      const draggedNode = JSON.parse(payload) as Pick<TreeNode, "id" | "type">;
+      return {
+        id: draggedNode.id,
+        type: draggedNode.type,
+        name: ""
+      };
+    } catch {
+      return null;
+    }
   }
 }

@@ -17,7 +17,7 @@ export class NoteService {
   private noteCount = 1;
   private categoryCount = 1;
 
-  createNote(categoryId?: number): Note {
+  async createNote(categoryId?: number): Promise<Note> {
     const now = Date.now();
     const id = this.consumeId();
     const noteNumber = this.noteCount++;
@@ -32,26 +32,23 @@ export class NoteService {
       updatedAt: now
     };
 
-    this.notes.update((notes) => [...notes, note]);
-    return note;
+    return this.saveNote(note);
   }
 
-  createCategory(parentId?: number): void {
+  async createCategory(parentId?: number): Promise<NoteCategory> {
     const id = this.consumeId();
     const categoryNumber = this.categoryCount++;
+    const category: NoteCategory = {
+      id,
+      name: `New Folder ${categoryNumber}`,
+      parentId,
+      description: "Empty folder",
+      icon: "folderOutline",
+      color: "text-sky-500",
+      isExpanded: true
+    };
 
-    this.categories.update((categories) => [
-      ...categories,
-      {
-        id,
-        name: `New Folder ${categoryNumber}`,
-        parentId,
-        description: "Empty folder",
-        icon: "folderOutline",
-        color: "text-sky-500",
-        isExpanded: true
-      }
-    ]);
+    return this.saveCategory(category);
   }
 
   setCategoryExpanded(categoryId: number, isExpanded: boolean): void {
@@ -66,6 +63,10 @@ export class NoteService {
 
   getNoteById(noteId: number): Note | undefined {
     return this.notes().find((note) => note.id === noteId);
+  }
+
+  getCategoryById(categoryId: number): NoteCategory | undefined {
+    return this.categories().find((category) => category.id === categoryId);
   }
 
   updateNoteContent(noteId: number, content: string): void {
@@ -83,25 +84,52 @@ export class NoteService {
   }
 
   async loadCategories(): Promise<NoteCategory[]> {
-    const categories = await invoke<NoteCategory[]>("get_categories");
+    const categories = (await invoke<NoteCategory[]>("get_categories"))
+      .map((category) => this.normalizeCategory(category));
     this.categories.set(categories);
+    this.syncIdentityState();
     return categories;
   }
 
   getCategory(categoryId: number): Promise<NoteCategory | null> {
-    return invoke<NoteCategory | null>("get_category", { categoryId });
+    return invoke<NoteCategory | null>("get_category", { categoryId })
+      .then((category) => category ? this.normalizeCategory(category) : null);
   }
 
   async saveCategory(category: NoteCategory): Promise<NoteCategory> {
-    const savedCategory = await invoke<NoteCategory>("save_category", { category });
+    const savedCategory = this.normalizeCategory(
+      await invoke<NoteCategory>("save_category", { category })
+    );
     this.categories.update((categories) => upsertById(categories, savedCategory));
     return savedCategory;
   }
 
   async updateCategory(category: NoteCategory): Promise<NoteCategory> {
-    const savedCategory = await invoke<NoteCategory>("update_category", { category });
+    const savedCategory = this.normalizeCategory(
+      await invoke<NoteCategory>("update_category", { category })
+    );
     this.categories.update((categories) => upsertById(categories, savedCategory));
     return savedCategory;
+  }
+
+  async moveCategory(categoryId: number, parentId?: number): Promise<NoteCategory> {
+    const category = this.getCategoryById(categoryId);
+    if (!category) {
+      throw new Error(`Category ${categoryId} was not found.`);
+    }
+
+    if (parentId === categoryId) {
+      throw new Error("A category cannot be moved into itself.");
+    }
+
+    if (parentId !== undefined && this.isCategoryDescendant(parentId, categoryId)) {
+      throw new Error("A category cannot be moved into one of its descendants.");
+    }
+
+    return this.updateCategory({
+      ...category,
+      parentId
+    });
   }
 
   async deleteCategory(categoryId: number): Promise<void> {
@@ -112,9 +140,11 @@ export class NoteService {
   }
 
   async loadNotes(categoryId?: number): Promise<Note[]> {
-    const notes = await invoke<Note[]>("get_notes", { categoryId });
+    const notes = (await invoke<Note[]>("get_notes", { categoryId }))
+      .map((note) => this.normalizeNote(note));
     if (categoryId === undefined) {
       this.notes.set(notes);
+      this.syncIdentityState();
       return notes;
     }
 
@@ -126,19 +156,37 @@ export class NoteService {
   }
 
   getNote(noteId: number): Promise<Note | null> {
-    return invoke<Note | null>("get_note", { noteId });
+    return invoke<Note | null>("get_note", { noteId })
+      .then((note) => note ? this.normalizeNote(note) : null);
   }
 
   async saveNote(note: Note): Promise<Note> {
-    const savedNote = await invoke<Note>("save_note", { note });
+    const savedNote = this.normalizeNote(
+      await invoke<Note>("save_note", { note })
+    );
     this.notes.update((notes) => upsertById(notes, savedNote));
     return savedNote;
   }
 
   async updateNote(note: Note): Promise<Note> {
-    const savedNote = await invoke<Note>("update_note", { note });
+    const savedNote = this.normalizeNote(
+      await invoke<Note>("update_note", { note })
+    );
     this.notes.update((notes) => upsertById(notes, savedNote));
     return savedNote;
+  }
+
+  async moveNote(noteId: number, categoryId?: number): Promise<Note> {
+    const note = this.getNoteById(noteId);
+    if (!note) {
+      throw new Error(`Note ${noteId} was not found.`);
+    }
+
+    return this.updateNote({
+      ...note,
+      categoryId,
+      updatedAt: Date.now()
+    });
   }
 
   async deleteNote(noteId: number): Promise<void> {
@@ -167,6 +215,7 @@ export class NoteService {
       .filter((category) => category.parentId === parentId)
       .map((category) => ({
         id: category.id,
+        type: "category" as const,
         name: category.name,
         description: category.description,
         icon: category.icon,
@@ -186,6 +235,7 @@ export class NoteService {
   private toNoteNode(note: Note): TreeNode {
     return {
       id: note.id,
+      type: "note",
       name: note.title,
       description: note.description,
       icon: note.icon,
@@ -197,6 +247,42 @@ export class NoteService {
     const id = this.nextId;
     this.nextId += 1;
     return id;
+  }
+
+  private syncIdentityState(): void {
+    const maxCategoryId = this.categories().reduce((max, category) => Math.max(max, category.id), 0);
+    const maxNoteId = this.notes().reduce((max, note) => Math.max(max, note.id), 0);
+    this.nextId = Math.max(this.nextId, maxCategoryId, maxNoteId) + 1;
+    this.noteCount = Math.max(this.noteCount, this.notes().length + 1);
+    this.categoryCount = Math.max(this.categoryCount, this.categories().length + 1);
+  }
+
+  private normalizeNote(note: Note): Note {
+    return {
+      ...note,
+      categoryId: note.categoryId ?? undefined
+    };
+  }
+
+  private normalizeCategory(category: NoteCategory): NoteCategory {
+    return {
+      ...category,
+      parentId: category.parentId ?? undefined
+    };
+  }
+
+  private isCategoryDescendant(categoryId: number, ancestorId: number): boolean {
+    let currentParentId = this.getCategoryById(categoryId)?.parentId;
+
+    while (currentParentId !== undefined) {
+      if (currentParentId === ancestorId) {
+        return true;
+      }
+
+      currentParentId = this.getCategoryById(currentParentId)?.parentId;
+    }
+
+    return false;
   }
 }
 

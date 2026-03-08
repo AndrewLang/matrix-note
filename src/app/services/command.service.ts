@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { ViewOrientation, ViewOrientations } from "@app/models/uistates";
 import { Command } from "../models/command";
 
 export interface SidebarCommandHandlers {
@@ -7,7 +8,7 @@ export interface SidebarCommandHandlers {
   toggleSidebar: () => void;
 }
 
-export interface WorkspacePreviewCommandHandlers {
+export interface WorkspaceNoteCommandHandlers {
   toggleEditor: () => void;
   togglePreview: () => void;
   showPreviewOnRight: () => void;
@@ -44,9 +45,13 @@ export class CommandService {
     ];
   }
 
-  createWorkspacePreviewCommands(
-    handlers: WorkspacePreviewCommandHandlers,
-    state: { showPreview: boolean; previewPlacement: "right" | "top" }
+  createWorkspaceNoteCommands(
+    handlers: WorkspaceNoteCommandHandlers,
+    state: {
+      showPreview: boolean;
+      showEditor: boolean;
+      previewPlacement: ViewOrientation
+    }
   ): Command[] {
     return [
       {
@@ -54,6 +59,7 @@ export class CommandService {
         name: "Toggle Editor",
         description: "Toggle the editor view",
         icon: "editor",
+        active: state.showEditor,
         action: handlers.toggleEditor
       },
       {
@@ -69,7 +75,7 @@ export class CommandService {
         name: "Preview Right",
         description: "Show preview on the right",
         icon: "panelRight",
-        active: state.previewPlacement === "right",
+        active: state.previewPlacement === ViewOrientations.Horizontal,
         action: handlers.showPreviewOnRight
       },
       {
@@ -77,7 +83,7 @@ export class CommandService {
         name: "Preview Top",
         description: "Show preview on top",
         icon: "panelTop",
-        active: state.previewPlacement === "top",
+        active: state.previewPlacement === ViewOrientations.Vertical,
         action: handlers.showPreviewOnTop
       }
     ];

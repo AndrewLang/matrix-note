@@ -8,8 +8,10 @@ import { NoteService } from "./note.service";
 })
 export class WorkspaceService {
   private readonly noteService = inject(NoteService);
+  private readonly autoSaveDelayMs = 750;
+  private readonly autoSaveTimers = new Map<number, ReturnType<typeof setTimeout>>();
 
-  readonly tabs = signal<EditableDocument[]>(this.createInitialTabs());
+  readonly tabs = signal<EditableDocument[]>([]);
   readonly activeTabId = signal<number | null>(this.tabs()[0]?.id ?? null);
   readonly activeTab = computed(() =>
     this.tabs().find((tab) => tab.id === this.activeTabId()) ?? null
@@ -36,9 +38,8 @@ export class WorkspaceService {
     this.activeTabId.set(document.id);
   }
 
-  createNoteTab(): void {
-    const note = this.noteService.createNote();
-    this.openNote(note.id);
+  createNoteTab(): Promise<void> {
+    return this.createAndOpenNoteTab();
   }
 
   closeTab(id: number): void {
@@ -69,13 +70,16 @@ export class WorkspaceService {
       tabs.map((tab) => (tab.id === document.id ? document : tab))
     );
     this.noteService.updateNoteContent(document.id, document.content);
+    this.scheduleAutoSave(document.id);
   }
 
-  private createInitialTabs(): EditableDocument[] {
-    return [3, 4]
-      .map((noteId) => this.noteService.getNoteById(noteId))
-      .filter((note): note is Note => note !== undefined)
-      .map((note) => this.toEditableDocument(note));
+  private async createAndOpenNoteTab(): Promise<void> {
+    try {
+      const note = await this.noteService.createNote();
+      this.openNote(note.id);
+    } catch (error) {
+      console.error("Failed to create note.", error);
+    }
   }
 
   private toEditableDocument(note: Note): EditableDocument {
@@ -85,5 +89,47 @@ export class WorkspaceService {
       content: note.content,
       isDirty: false
     };
+  }
+
+  private scheduleAutoSave(noteId: number): void {
+    const existingTimer = this.autoSaveTimers.get(noteId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
+    const timer = setTimeout(() => {
+      this.autoSaveTimers.delete(noteId);
+      void this.saveDocument(noteId);
+    }, this.autoSaveDelayMs);
+
+    this.autoSaveTimers.set(noteId, timer);
+  }
+
+  private async saveDocument(noteId: number): Promise<void> {
+    const tab = this.tabs().find((currentTab) => currentTab.id === noteId);
+    const note = this.noteService.getNoteById(noteId);
+    if (!tab || !note) {
+      return;
+    }
+
+    const contentAtSaveStart = tab.content;
+
+    try {
+      await this.noteService.updateNote({
+        ...note,
+        content: contentAtSaveStart,
+        updatedAt: Date.now()
+      });
+
+      this.tabs.update((tabs) =>
+        tabs.map((currentTab) =>
+          currentTab.id === noteId && currentTab.content === contentAtSaveStart
+            ? { ...currentTab, isDirty: false }
+            : currentTab
+        )
+      );
+    } catch (error) {
+      console.error(`Failed to auto-save note ${noteId}.`, error);
+    }
   }
 }

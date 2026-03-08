@@ -1,89 +1,66 @@
 import { isPlatformBrowser } from "@angular/common";
 import { Inject, Injectable, PLATFORM_ID, signal } from "@angular/core";
+import { ViewOrientation, ViewOrientations } from "@app/models/uistates";
+import { SettingNames } from "../models/setting.names";
 
 @Injectable({
   providedIn: "root"
 })
 export class UiStateService {
-  private static readonly sidebarCollapsedKey = "mtx.ui.sidebar.collapsed";
-  private static readonly previewVisibleKey = "mtx.ui.preview.visible";
-  private static readonly previewPlacementKey = "mtx.ui.preview.placement";
-
   readonly isSidebarCollapsed = signal(false);
   readonly isPreviewVisible = signal(true);
-  readonly isEditorVisible = signal(true);
-  readonly previewPlacement = signal<"right" | "top">("right");
+  readonly isEditorVisible = signal(false);
+  readonly previewPlacement = signal<ViewOrientation>(ViewOrientations.Horizontal);
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
     if (!isPlatformBrowser(platformId)) {
       return;
     }
 
-    this.isSidebarCollapsed.set(this.readSidebarCollapsed());
-    this.isPreviewVisible.set(this.readPreviewVisible());
-    this.previewPlacement.set(this.readPreviewPlacement());
+    this.isSidebarCollapsed.set(this.readSetting<boolean>(SettingNames.sidebarCollapsedKey) ?? false);
+    this.isPreviewVisible.set(this.readSetting<boolean>(SettingNames.previewVisibleKey) ?? true);
+    this.isEditorVisible.set(this.readSetting<boolean>(SettingNames.editorVisibleKey) ?? false);
+    this.previewPlacement.set(this.readSetting<ViewOrientation>(SettingNames.previewPlacementKey) ?? ViewOrientations.Horizontal);
   }
 
   toggleSidebar(): void {
-    this.setSidebarCollapsed(!this.isSidebarCollapsed());
-  }
-
-  setSidebarCollapsed(collapsed: boolean): void {
-    this.isSidebarCollapsed.set(collapsed);
-    localStorage.setItem(UiStateService.sidebarCollapsedKey, JSON.stringify(collapsed));
+    let value = !this.isSidebarCollapsed();
+    this.isSidebarCollapsed.set(value);
+    this.writeSetting(SettingNames.sidebarCollapsedKey, value);
   }
 
   togglePreview(): void {
-    this.setPreviewVisible(!this.isPreviewVisible());
+    const value = !this.isPreviewVisible();
+    this.isPreviewVisible.set(value);
+    this.writeSetting(SettingNames.previewVisibleKey, value);
   }
 
   toggleEditor(): void {
-    this.setEditorVisible(!this.isEditorVisible());
+    const value = !this.isEditorVisible();
+    this.isEditorVisible.set(value);
+    this.writeSetting(SettingNames.editorVisibleKey, value);
   }
 
-  setEditorVisible(visible: boolean): void {
-    this.isEditorVisible.set(visible);
+  setPreviewPlacement(orientation: ViewOrientation): void {
+    this.previewPlacement.set(orientation);
+    this.writeSetting(SettingNames.previewPlacementKey, orientation);
   }
 
-  setPreviewVisible(visible: boolean): void {
-    this.isPreviewVisible.set(visible);
-    localStorage.setItem(UiStateService.previewVisibleKey, JSON.stringify(visible));
-  }
-
-  setPreviewPlacement(placement: "right" | "top"): void {
-    this.previewPlacement.set(placement);
-    localStorage.setItem(UiStateService.previewPlacementKey, placement);
-  }
-
-  private readSidebarCollapsed(): boolean {
-    const storedValue = localStorage.getItem(UiStateService.sidebarCollapsedKey);
+  private readSetting<T>(key: string): T | null {
+    const storedValue = localStorage.getItem(key);
 
     if (storedValue === null) {
-      return false;
+      return null;
     }
 
     try {
-      return JSON.parse(storedValue) === true;
+      return JSON.parse(storedValue) as T;
     } catch {
-      return false;
+      return null;
     }
   }
 
-  private readPreviewVisible(): boolean {
-    const storedValue = localStorage.getItem(UiStateService.previewVisibleKey);
-
-    if (storedValue === null) {
-      return true;
-    }
-
-    try {
-      return JSON.parse(storedValue) !== false;
-    } catch {
-      return true;
-    }
-  }
-
-  private readPreviewPlacement(): "right" | "top" {
-    return localStorage.getItem(UiStateService.previewPlacementKey) === "top" ? "top" : "right";
+  private writeSetting<T>(key: string, value: T): void {
+    localStorage.setItem(key, JSON.stringify(value));
   }
 }
