@@ -1,18 +1,7 @@
 import { DOCUMENT } from "@angular/common";
 import { Component, EventEmitter, Output, inject, signal } from "@angular/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { SvgComponent } from "../../shared/svg/svg.component";
-
-type TauriWindowApi = {
-  close?: () => Promise<void> | void;
-  minimize?: () => Promise<void> | void;
-  toggleMaximize?: () => Promise<void> | void;
-};
-
-type TauriGlobal = {
-  window?: {
-    getCurrentWindow?: () => TauriWindowApi;
-  };
-};
 
 @Component({
   selector: "mtx-titlebar",
@@ -47,23 +36,14 @@ export class TitlebarComponent {
   }
 
   async minimizeWindow(): Promise<void> {
-    await this.getCurrentWindow()?.minimize?.();
+    await getCurrentWindow().minimize();
   }
 
   async toggleMaximizeWindow(): Promise<void> {
-    await this.getCurrentWindow()?.toggleMaximize?.();
+    await getCurrentWindow().toggleMaximize();
   }
 
   async closeWindow(): Promise<void> {
-    await this.getCurrentWindow()?.close?.();
-  }
-
-  private getCurrentWindow(): TauriWindowApi | null {
-    if (typeof window === "undefined") {
-      return null;
-    }
-
-    const tauri = (window as Window & { __TAURI__?: TauriGlobal }).__TAURI__;
-    return tauri?.window?.getCurrentWindow?.() ?? null;
+    await getCurrentWindow().close();
   }
 }

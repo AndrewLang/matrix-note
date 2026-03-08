@@ -1,7 +1,9 @@
 pub mod commands;
 pub mod models;
+pub mod note_repository;
 
-use tauri::Builder;
+use note_repository::NoteRepository;
+use tauri::{Builder, Manager};
 
 pub struct AppBuilder;
 
@@ -19,7 +21,13 @@ impl AppBuilder {
     }
 
     fn builder(&self) -> Builder<tauri::Wry> {
-        let builder = Builder::default().plugin(tauri_plugin_shell::init());
+        let builder = Builder::default()
+            .plugin(tauri_plugin_shell::init())
+            .setup(|app| {
+                let repository = NoteRepository::new(&app.handle())?;
+                app.manage(repository);
+                Ok(())
+            });
         commands::register(builder)
     }
 }

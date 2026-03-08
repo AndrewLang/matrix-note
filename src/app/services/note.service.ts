@@ -1,132 +1,15 @@
 import { Injectable, computed, signal } from "@angular/core";
-import { Note, NoteCategory } from "../models/note";
+import { invoke } from "@tauri-apps/api/core";
+import { ExportedFiles, Note, NoteCategory } from "../models/note";
 import { TreeNode } from "../models/tree";
 
 @Injectable({
   providedIn: "root"
 })
 export class NoteService {
-  readonly categories = signal<NoteCategory[]>([
-    {
-      id: 1,
-      name: "Projects",
-      icon: "folderSolid",
-      color: "text-blue-500",
-      isExpanded: true
-    },
-    {
-      id: 2,
-      name: "Aero Redesign",
-      parentId: 1,
-      icon: "folderOutline",
-      color: "text-sky-500",
-      isExpanded: true
-    },
-    {
-      id: 6,
-      name: "API Gateway V2",
-      parentId: 1,
-      icon: "folderOutline",
-      color: "text-sky-500",
-      isExpanded: true
-    },
-    {
-      id: 10,
-      name: "Personal Notes",
-      icon: "folderSolid",
-      color: "text-emerald-500",
-      isExpanded: true
-    },
-    {
-      id: 13,
-      name: "Archive",
-      parentId: 10,
-      icon: "folderSolid",
-      color: "text-rose-500",
-      isExpanded: true
-    },
-    {
-      id: 14,
-      name: "Code Snippets",
-      icon: "folderSolid",
-      color: "text-violet-500",
-      isExpanded: true
-    }
-  ]);
+  readonly categories = signal<NoteCategory[]>([]);
 
-  readonly notes = signal<Note[]>([
-    this.createSeedNote(
-      3,
-      "Architecture.md",
-      2,
-      `# Aero Design Architecture
-
-## Core Philosophy
-We believe an application should look as responsive as it feels. Taking inspiration from glassmorphism, we build layers of frosted depth over vibrant backdrops.
-
-### Key Points:
-1. **Fluid Typography:** Scales nicely on high DPI displays.
-2. **Dynamic Theming:** Smooth transitions between \`Light Mode\` and \`Dark Mode\`.
-3. **Subtle Elevation:** Dropshadows and translucent borders define structure without clutter.
-
-\`\`\`js
-// The toggle orchestrator
-function switchTheme() {
-    document.documentElement.classList.toggle('dark');
-}
-\`\`\`
-
-> "Design is not just what it looks like and feels like. Design is how it works."
-> - *Steve Jobs*
-
-[View Figma Prototypes](https://figma.com/example)`
-    ),
-    this.createSeedNote(
-      4,
-      "Design-System.md",
-      2,
-      `# Design System
-
-## Tokens
-- Colors
-- Typography
-- Spacing
-
-## Example Component
-
-\`\`\`ts
-type ButtonVariant = "primary" | "secondary";
-
-export function getButtonClass(variant: ButtonVariant): string {
-  return variant === "primary"
-    ? "bg-blue-500 text-white hover:bg-blue-600"
-    : "bg-slate-100 text-slate-900 hover:bg-slate-200";
-}
-\`\`\`
-
-## Token Flow
-
-\`\`\`mermaid
-flowchart LR
-  A[Design Tokens] --> B[Theme Variables]
-  B --> C[Component Variants]
-  C --> D[Workspace UI]
-\`\`\`
-
-## Guidelines
-- Keep spacing values on a 4px scale.
-- Use semantic color tokens in components.
-- Prefer shared variants over one-off styles.`
-    ),
-    this.createSeedNote(5, "Assets/", 2, "", "cloud"),
-    this.createSeedNote(7, "routes.rs", 6, "", "circlePlus", "text-[#e34c26]"),
-    this.createSeedNote(8, "middleware.rs", 6, "", "circlePlus", "text-[#e34c26]"),
-    this.createSeedNote(9, "README.md", 6),
-    this.createSeedNote(11, "12-Oct-Sync.md", 10),
-    this.createSeedNote(12, "Todo-List.md", 10),
-    this.createSeedNote(15, "utilities.js", 14, "", "codeBrackets", "text-yellow-500"),
-    this.createSeedNote(16, "React-Hooks.md", 14)
-  ]);
+  readonly notes = signal<Note[]>([]);
 
   readonly treeNodes = computed(() => this.buildTree());
 
@@ -199,6 +82,86 @@ flowchart LR
     );
   }
 
+  async loadCategories(): Promise<NoteCategory[]> {
+    const categories = await invoke<NoteCategory[]>("get_categories");
+    this.categories.set(categories);
+    return categories;
+  }
+
+  getCategory(categoryId: number): Promise<NoteCategory | null> {
+    return invoke<NoteCategory | null>("get_category", { categoryId });
+  }
+
+  async saveCategory(category: NoteCategory): Promise<NoteCategory> {
+    const savedCategory = await invoke<NoteCategory>("save_category", { category });
+    this.categories.update((categories) => upsertById(categories, savedCategory));
+    return savedCategory;
+  }
+
+  async updateCategory(category: NoteCategory): Promise<NoteCategory> {
+    const savedCategory = await invoke<NoteCategory>("update_category", { category });
+    this.categories.update((categories) => upsertById(categories, savedCategory));
+    return savedCategory;
+  }
+
+  async deleteCategory(categoryId: number): Promise<void> {
+    await invoke<void>("delete_category", { categoryId });
+    this.categories.update((categories) =>
+      categories.filter((category) => category.id !== categoryId)
+    );
+  }
+
+  async loadNotes(categoryId?: number): Promise<Note[]> {
+    const notes = await invoke<Note[]>("get_notes", { categoryId });
+    if (categoryId === undefined) {
+      this.notes.set(notes);
+      return notes;
+    }
+
+    this.notes.update((existingNotes) => {
+      const unrelatedNotes = existingNotes.filter((note) => note.categoryId !== categoryId);
+      return [...unrelatedNotes, ...notes];
+    });
+    return notes;
+  }
+
+  getNote(noteId: number): Promise<Note | null> {
+    return invoke<Note | null>("get_note", { noteId });
+  }
+
+  async saveNote(note: Note): Promise<Note> {
+    const savedNote = await invoke<Note>("save_note", { note });
+    this.notes.update((notes) => upsertById(notes, savedNote));
+    return savedNote;
+  }
+
+  async updateNote(note: Note): Promise<Note> {
+    const savedNote = await invoke<Note>("update_note", { note });
+    this.notes.update((notes) => upsertById(notes, savedNote));
+    return savedNote;
+  }
+
+  async deleteNote(noteId: number): Promise<void> {
+    await invoke<void>("delete_note", { noteId });
+    this.notes.update((notes) => notes.filter((note) => note.id !== noteId));
+  }
+
+  exportNote(noteId: number, destinationPath: string): Promise<string> {
+    return invoke<string>("export_note", { noteId, destinationPath });
+  }
+
+  exportCategoryNotes(
+    categoryId: number,
+    destinationDir: string,
+    recursive = true
+  ): Promise<ExportedFiles> {
+    return invoke<ExportedFiles>("export_category_notes", {
+      categoryId,
+      destinationDir,
+      recursive
+    });
+  }
+
   private buildTree(parentId?: number): TreeNode[] {
     const categoryNodes = this.categories()
       .filter((category) => category.parentId === parentId)
@@ -230,31 +193,20 @@ flowchart LR
     };
   }
 
-  private createSeedNote(
-    id: number,
-    title: string,
-    categoryId?: number,
-    content = "",
-    icon = "document",
-    color?: string
-  ): Note {
-    const now = Date.now();
-
-    return {
-      id,
-      title,
-      content,
-      categoryId,
-      icon,
-      color,
-      createdAt: now,
-      updatedAt: now
-    };
-  }
-
   private consumeId(): number {
     const id = this.nextId;
     this.nextId += 1;
     return id;
   }
+}
+
+function upsertById<T extends { id: number }>(items: T[], item: T): T[] {
+  const index = items.findIndex((current) => current.id === item.id);
+  if (index === -1) {
+    return [...items, item];
+  }
+
+  const nextItems = [...items];
+  nextItems[index] = item;
+  return nextItems;
 }

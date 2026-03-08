@@ -20,3 +20,7 @@ export interface NoteCategory {
   color?: string;
   isExpanded?: boolean;
 }
+
+export interface ExportedFiles {
+  files: string[];
+}

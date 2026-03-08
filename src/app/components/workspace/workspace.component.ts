@@ -32,6 +32,7 @@ export class WorkspaceComponent {
   get previewCommands(): Command[] {
     return this.commandService.createWorkspacePreviewCommands(
       {
+        toggleEditor: () => this.uiStateService.toggleEditor(),
         togglePreview: () => this.uiStateService.togglePreview(),
         showPreviewOnRight: () => this.uiStateService.setPreviewPlacement("right"),
         showPreviewOnTop: () => this.uiStateService.setPreviewPlacement("top")

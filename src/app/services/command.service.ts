@@ -8,6 +8,7 @@ export interface SidebarCommandHandlers {
 }
 
 export interface WorkspacePreviewCommandHandlers {
+  toggleEditor: () => void;
   togglePreview: () => void;
   showPreviewOnRight: () => void;
   showPreviewOnTop: () => void;
@@ -48,6 +49,13 @@ export class CommandService {
     state: { showPreview: boolean; previewPlacement: "right" | "top" }
   ): Command[] {
     return [
+      {
+        id: 100,
+        name: "Toggle Editor",
+        description: "Toggle the editor view",
+        icon: "editor",
+        action: handlers.toggleEditor
+      },
       {
         id: 101,
         name: "Toggle Preview",

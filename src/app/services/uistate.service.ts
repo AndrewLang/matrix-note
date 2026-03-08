@@ -1,5 +1,5 @@
-import { Inject, Injectable, PLATFORM_ID, signal } from "@angular/core";
 import { isPlatformBrowser } from "@angular/common";
+import { Inject, Injectable, PLATFORM_ID, signal } from "@angular/core";
 
 @Injectable({
   providedIn: "root"
@@ -11,6 +11,7 @@ export class UiStateService {
 
   readonly isSidebarCollapsed = signal(false);
   readonly isPreviewVisible = signal(true);
+  readonly isEditorVisible = signal(true);
   readonly previewPlacement = signal<"right" | "top">("right");
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
@@ -34,6 +35,14 @@ export class UiStateService {
 
   togglePreview(): void {
     this.setPreviewVisible(!this.isPreviewVisible());
+  }
+
+  toggleEditor(): void {
+    this.setEditorVisible(!this.isEditorVisible());
+  }
+
+  setEditorVisible(visible: boolean): void {
+    this.isEditorVisible.set(visible);
   }
 
   setPreviewVisible(visible: boolean): void {
