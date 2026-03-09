@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ViewOrientation, ViewOrientations } from "@app/models/uistates";
+import { invoke } from "@tauri-apps/api/core";
 import { Command } from "../models/command";
 
 export interface SidebarCommandHandlers {
@@ -87,5 +88,15 @@ export class CommandService {
         action: handlers.showPreviewOnTop
       }
     ];
+  }
+
+
+  async invokeCommand(commandName: string, args?: Record<string, unknown>): Promise<unknown> {
+    try {
+      return await invoke(commandName, args);
+    } catch (error) {
+      console.error(`Failed to invoke command ${commandName}`, error);
+      throw error;
+    }
   }
 }

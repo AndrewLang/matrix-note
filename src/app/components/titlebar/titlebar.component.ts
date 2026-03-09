@@ -1,6 +1,7 @@
-import { Component, EventEmitter, OnDestroy, Output, signal } from "@angular/core";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { Component, EventEmitter, inject, Output, signal } from "@angular/core";
+import { CommandService } from "@app/services/command.service";
 import type { UnlistenFn } from "@tauri-apps/api/event";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { SvgComponent } from "../../shared/svg/svg.component";
 
 @Component({
@@ -10,6 +11,8 @@ import { SvgComponent } from "../../shared/svg/svg.component";
 })
 export class TitlebarComponent {
   private static readonly githubUrl = "https://github.com/AndrewLang/matrix-note";
+  private commandService = inject(CommandService);
+
   private unlistenResize: UnlistenFn | null = null;
   readonly isMaximized = signal(false);
   @Output() readonly openSettings = new EventEmitter<void>();
@@ -30,7 +33,7 @@ export class TitlebarComponent {
   }
 
   openGithub(): void {
-    window.open(TitlebarComponent.githubUrl, "_blank", "noopener,noreferrer");
+    void this.commandService.invokeCommand("open_link", { url: TitlebarComponent.githubUrl });
   }
 
   async minimizeWindow(): Promise<void> {

@@ -1,6 +1,7 @@
 use tauri::{Builder, Runtime};
 
 mod note;
+mod system;
 
 pub fn register<R: Runtime>(builder: Builder<R>) -> Builder<R> {
     builder.invoke_handler(tauri::generate_handler![
@@ -15,6 +16,7 @@ pub fn register<R: Runtime>(builder: Builder<R>) -> Builder<R> {
         note::update_note,
         note::delete_note,
         note::export_note,
-        note::export_category_notes
+        note::export_category_notes,
+        system::open_link
     ])
 }

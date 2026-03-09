@@ -52,6 +52,11 @@ export class NoteService {
   }
 
   setCategoryExpanded(categoryId: number, isExpanded: boolean): void {
+    const category = this.getCategoryById(categoryId);
+    if (!category || category.isExpanded === isExpanded) {
+      return;
+    }
+
     this.categories.update((categories) =>
       categories.map((category) =>
         category.id === categoryId
@@ -59,6 +64,20 @@ export class NoteService {
           : category
       )
     );
+
+    void this.updateCategory({
+      ...category,
+      isExpanded
+    }).catch((error) => {
+      console.error(`Failed to persist category ${categoryId} expanded state.`, error);
+      this.categories.update((categories) =>
+        categories.map((currentCategory) =>
+          currentCategory.id === categoryId
+            ? { ...currentCategory, isExpanded: category.isExpanded }
+            : currentCategory
+        )
+      );
+    });
   }
 
   getNoteById(noteId: number): Note | undefined {
