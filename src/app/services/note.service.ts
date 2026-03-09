@@ -23,7 +23,7 @@ export class NoteService {
     const noteNumber = this.noteCount++;
     const note: Note = {
       id,
-      title: `Untitled-${noteNumber}.md`,
+      title: `Note-${noteNumber}`,
       content: "# New Note\n\nStart writing...",
       categoryId,
       description: "New note",
@@ -74,10 +74,10 @@ export class NoteService {
       notes.map((note) =>
         note.id === noteId
           ? {
-              ...note,
-              content,
-              updatedAt: Date.now()
-            }
+            ...note,
+            content,
+            updatedAt: Date.now()
+          }
           : note
       )
     );

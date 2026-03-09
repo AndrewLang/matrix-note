@@ -2,11 +2,11 @@
   <div class="flex h-8 items-center border-b border-black/10 pr-1 select-none dark:border-white/5">
     <div class="flex h-full min-w-0 flex-1 overflow-x-auto">
       @for (tab of tabs(); track tab.id) {
-      <div (click)="selectTab(tab.id)" class="h-full flex items-center px-1 font-medium cursor-pointer 
+      <div (click)="selectTab(tab.id)" class="h-full flex items-center px-1 font-medium cursor-pointer
              gap-2 min-w-[150px] transition-colors" [ngClass]="
           activeTabId() === tab.id
-            ? 'relative z-10 border border-b-0 border-black/10 bg-white/80 text-gray-900 dark:border-white/[0.05] dark:bg-white/[0.06]'
-            : 'border border-transparent text-gray-600 hover:bg-black/8 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200'
+            ? 'relative z-10 border border-b-0 border-black/10 bg-white/80 text-gray-900 dark:text-slate-300 dark:border-white/[0.05] dark:bg-white/[0.06]'
+            : 'border border-transparent text-gray-600 hover:bg-black/30 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200'
         " mtxContextMenu="tab" [contextMenuPayload]="tab">
         <mtx-svg name="document"
           [svgClass]="activeTabId() === tab.id ? 'h-3.5 w-3.5 text-blue-500' : 'h-3.5 w-3.5'"></mtx-svg>
@@ -14,8 +14,8 @@
         @if (tab.isDirty) {
         <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
         }
-        <button (click)="closeTab(tab.id, $event)"
-          class="w-5 h-5 flex items-center justify-center rounded-md transition-opacity"
+        <button id="closeNote" (click)="closeTab(tab.id, $event)"
+          class="flex h-full w-5 items-center justify-center rounded-md text-base leading-none transition-opacity"
           [ngClass]="activeTabId() === tab.id ? 'opacity-60 hover:opacity-100' : 'opacity-0 hover:opacity-100'"
           aria-label="Close tab" title="Close Note">
           &times;
@@ -23,8 +23,8 @@
       </div>
       }
 
-      <button type="button" (click)="addTab()" class="h-full w-7 shrink-0 flex items-center justify-center text-gray-600 dark:text-gray-400 
-      hover:bg-black/8 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-gray-200 
+      <button type="button" (click)="addTab()" class="h-full w-7 shrink-0 flex items-center justify-center text-gray-600 dark:text-gray-400
+      hover:bg-black/30 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-gray-200
       transition-colors" aria-label="Add tab">
         <mtx-svg name="plus" svgClass="h-4 w-4"></mtx-svg>
       </button>
