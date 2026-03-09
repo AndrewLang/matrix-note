@@ -36,6 +36,32 @@ export class MarkdownPreviewComponent implements AfterViewInit, OnChanges {
     breaks: true,
     gfm: true
   });
+  private readonly mermaidPrefixes = [
+    "graph",
+    "flowchart",
+    "sequenceDiagram",
+    "classDiagram",
+    "stateDiagram",
+    "stateDiagram-v2",
+    "erDiagram",
+    "journey",
+    "gantt",
+    "pie",
+    "mindmap",
+    "timeline",
+    "gitGraph",
+    "quadrantChart",
+    "requirementDiagram",
+    "xychart-beta",
+    "block-beta",
+    "packet-beta",
+    "kanban",
+    "C4Context",
+    "C4Container",
+    "C4Component",
+    "C4Dynamic",
+    "C4Deployment"
+  ];
   private mermaidInitialized = false;
 
   constructor(@Inject(PLATFORM_ID) platformId: object) {
@@ -93,7 +119,7 @@ export class MarkdownPreviewComponent implements AfterViewInit, OnChanges {
   }
 
   private async renderContent(): Promise<void> {
-    const html = await this.markdown.parse(this.content || "");
+    const html = await this.markdown.parse(this.normalizeMarkdown(this.content || ""));
     this.renderedHtml.set(DOMPurify.sanitize(html));
 
     if (!this.isBrowser || !this.previewRoot) {
@@ -150,5 +176,22 @@ export class MarkdownPreviewComponent implements AfterViewInit, OnChanges {
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#39;");
+  }
+
+  private normalizeMarkdown(content: string): string {
+    const trimmed = content.trim();
+    if (!trimmed || trimmed.startsWith("```")) {
+      return content;
+    }
+
+    if (this.looksLikeStandaloneMermaid(trimmed)) {
+      return `\`\`\`mermaid\n${trimmed}\n\`\`\``;
+    }
+
+    return content;
+  }
+
+  private looksLikeStandaloneMermaid(content: string): boolean {
+    return this.mermaidPrefixes.some((prefix) => content.startsWith(prefix));
   }
 }
