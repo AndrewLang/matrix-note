@@ -16,9 +16,11 @@
     },
     "windows": [
       {
+        "label": "main",
         "title": "Matrix Notebook",
         "width": 1280,
         "height": 800,
+        "visible": false,
         "backgroundColor": "#e2e8f0",
         "resizable": true,
         "minimizable": true,
