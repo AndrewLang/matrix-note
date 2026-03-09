@@ -53,13 +53,15 @@ export class SidebarComponent {
         return {
           ...node,
           onDrop: (draggedNode, targetNode) => this.handleDrop(draggedNode, targetNode),
+          onRename: (targetNode, name) => this.renameNode(targetNode, name),
           children: this.bindDocumentSelection(node.children)
         };
       }
 
       return {
         ...node,
-        onSelect: () => this.workspaceService.openNote(node.id)
+        onSelect: () => this.workspaceService.openNote(node.id),
+        onRename: (targetNode, name) => this.renameNode(targetNode, name)
       };
     });
   }
@@ -78,6 +80,20 @@ export class SidebarComponent {
       await this.noteService.moveCategory(draggedNode.id, targetNode.id);
     } catch (error) {
       console.error("Failed to move sidebar node.", error);
+    }
+  }
+
+  private async renameNode(node: TreeNode, name: string): Promise<void> {
+    try {
+      if (node.type === "note") {
+        const note = await this.noteService.renameNote(node.id, name);
+        this.workspaceService.renameDocument(node.id, note.title);
+        return;
+      }
+
+      await this.noteService.renameCategory(node.id, name);
+    } catch (error) {
+      console.error("Failed to rename sidebar node.", error);
     }
   }
 }

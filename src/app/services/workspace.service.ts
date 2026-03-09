@@ -73,6 +73,12 @@ export class WorkspaceService {
     this.scheduleAutoSave(document.id);
   }
 
+  renameDocument(noteId: number, title: string): void {
+    this.tabs.update((tabs) =>
+      tabs.map((tab) => (tab.id === noteId ? { ...tab, title } : tab))
+    );
+  }
+
   private async createAndOpenNoteTab(): Promise<void> {
     try {
       const note = await this.noteService.createNote();

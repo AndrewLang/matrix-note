@@ -10,4 +10,5 @@ export interface TreeNode {
   onExpand?: (node: TreeNode) => void;
   onSelect?: (node: TreeNode) => void;
   onDrop?: (draggedNode: TreeNode, targetNode: TreeNode) => void | Promise<void>;
+  onRename?: (node: TreeNode, name: string) => void | Promise<void>;
 }

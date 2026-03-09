@@ -132,6 +132,18 @@ export class NoteService {
     });
   }
 
+  async renameCategory(categoryId: number, name: string): Promise<NoteCategory> {
+    const category = this.getCategoryById(categoryId);
+    if (!category) {
+      throw new Error(`Category ${categoryId} was not found.`);
+    }
+
+    return this.updateCategory({
+      ...category,
+      name
+    });
+  }
+
   async deleteCategory(categoryId: number): Promise<void> {
     await invoke<void>("delete_category", { categoryId });
     this.categories.update((categories) =>
@@ -185,6 +197,19 @@ export class NoteService {
     return this.updateNote({
       ...note,
       categoryId,
+      updatedAt: Date.now()
+    });
+  }
+
+  async renameNote(noteId: number, title: string): Promise<Note> {
+    const note = this.getNoteById(noteId);
+    if (!note) {
+      throw new Error(`Note ${noteId} was not found.`);
+    }
+
+    return this.updateNote({
+      ...note,
+      title,
       updatedAt: Date.now()
     });
   }

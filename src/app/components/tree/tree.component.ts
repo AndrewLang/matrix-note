@@ -13,6 +13,8 @@ export class TreeComponent {
 
   private readonly indentation = 20;
   protected hoveredDropNodeId: number | null = null;
+  protected editingNodeId: number | null = null;
+  protected editingName = "";
 
   readonly childPadding = computed(() => `${this.depth() === 0 ? this.indentation : this.indentation + 4}px`);
 
@@ -74,6 +76,52 @@ export class TreeComponent {
 
   canDropOn(node: TreeNode): boolean {
     return node.type === "category";
+  }
+
+  isEditing(node: TreeNode): boolean {
+    return this.editingNodeId === node.id;
+  }
+
+  startRename(node: TreeNode, event?: MouseEvent): void {
+    event?.preventDefault();
+    event?.stopPropagation();
+    this.editingNodeId = node.id;
+    this.editingName = node.name;
+  }
+
+  updateEditingName(event: Event): void {
+    this.editingName = (event.target as HTMLInputElement).value;
+  }
+
+  async commitRename(node: TreeNode): Promise<void> {
+    const nextName = this.editingName.trim();
+    this.editingNodeId = null;
+
+    if (!nextName || nextName === node.name) {
+      this.editingName = "";
+      return;
+    }
+
+    this.editingName = "";
+    await node.onRename?.(node, nextName);
+  }
+
+  cancelRename(): void {
+    this.editingNodeId = null;
+    this.editingName = "";
+  }
+
+  async handleRenameKeydown(event: KeyboardEvent, node: TreeNode): Promise<void> {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      await this.commitRename(node);
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      this.cancelRename();
+    }
   }
 
   startDrag(event: DragEvent, node: TreeNode): void {
