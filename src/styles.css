@@ -17,18 +17,18 @@
   }
 
   body {
-    @apply m-0 min-h-full w-full bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
+    @apply m-0 min-h-full w-full bg-slate-100 text-slate-950 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100;
   }
 
 }
 
 @layer components {
   .mn-glass-container {
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.72);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.14);
   }
 
   html.dark .mn-glass-container {
@@ -38,7 +38,7 @@
   }
 
   .mn-glass-tab-active {
-    @apply bg-white/50 border border-black/5 border-b-0;
+    @apply bg-white/80 border border-black/10 border-b-0;
   }
 
   html.dark .mn-glass-tab-active {
@@ -46,20 +46,20 @@
   }
 
   .mn-editor-toolbar {
-    @apply flex items-center gap-0.5 px-4 py-2 border-b border-black/5 dark:border-white/5;
+    @apply flex items-center gap-0.5 px-4 py-2 border-b border-black/10 dark:border-white/5;
   }
 
   .mn-editor-tool {
-    @apply text-gray-700 dark:text-gray-300 rounded-md w-[30px] h-[30px] inline-flex items-center justify-center transition-colors;
+    @apply text-gray-800 dark:text-gray-300 rounded-md w-[30px] h-[30px] inline-flex items-center justify-center transition-colors;
   }
 
   .mn-editor-tool:hover,
   .mn-editor-tool:focus-visible {
-    @apply bg-black/[0.08] dark:bg-white/10 outline-none;
+    @apply bg-black/[0.1] dark:bg-white/10 outline-none;
   }
 
   .mn-editor-textarea {
-    @apply flex-1 w-full resize-none bg-transparent border-0 px-8 py-4 text-[15px] leading-[1.7] text-gray-800 dark:text-gray-100 focus:outline-none;
+    @apply flex-1 w-full resize-none bg-transparent border-0 px-8 py-4 text-[15px] leading-[1.7] text-gray-900 dark:text-gray-100 focus:outline-none;
     caret-color: #0f172a;
   }
 

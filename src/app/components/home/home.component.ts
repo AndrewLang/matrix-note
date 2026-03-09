@@ -29,7 +29,8 @@ export class HomeComponent {
       closable: true,
       closeOnBackdrop: true,
       closeOnEscape: true,
-      dialogClass: "max-w-[700px] h-[500px]"
+      dialogClass: "max-w-[700px] h-[500px]",
+      bodyClass: "overflow-hidden"
     });
   }
 

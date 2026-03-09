@@ -1,5 +1,5 @@
-<div class="flex h-[500px] min-h-0 overflow-hidden">
-  <div class="flex w-[200px] flex-col gap-1 overflow-y-auto border-r border-black/5 p-3 dark:border-white/5">
+<div class="flex h-full min-h-0 overflow-hidden">
+  <div class="flex w-[200px] flex-col gap-1 overflow-y-auto border-r border-black/10 p-3 dark:border-white/5">
     @for (tab of tabs; track tab.id) {
     @if (tab.bottom) {
     <div class="flex-1"></div>
@@ -7,126 +7,29 @@
     <button (click)="selectTab(tab.id)" class="rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors"
       [ngClass]="
           activeTab() === tab.id
-            ? 'bg-black/5 text-blue-600 dark:bg-white/10 dark:text-blue-400'
-            : 'text-gray-600 hover:bg-black/5 dark:text-gray-400 dark:hover:bg-white/5'
+            ? 'bg-black/8 text-blue-700 dark:bg-white/10 dark:text-blue-400'
+            : 'text-gray-700 hover:bg-black/8 dark:text-gray-400 dark:hover:bg-white/5'
         ">
       {{ tab.label }}
     </button>
     }
   </div>
 
-  <div class="flex-1 overflow-y-auto bg-white/10 p-6 text-gray-800 dark:bg-black/10 dark:text-gray-200">
+  <div class="flex-1 overflow-y-auto bg-white/25 p-6 text-gray-900 dark:bg-black/10 dark:text-gray-200">
     @if (activeTab() === 'general') {
-    <div class="max-w-2xl">
-      <h3 class="mb-2 text-lg font-semibold">General</h3>
-      <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Control how note edits are persisted while you work.</p>
-
-      <div class="rounded-2xl border border-black/5 bg-white/40 p-4 dark:border-white/10 dark:bg-white/5">
-        <div class="flex items-center justify-between gap-4">
-          <div>
-            <div class="text-sm font-medium">Auto Save</div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              Save note edits automatically shortly after changes are made.
-            </div>
-          </div>
-          <label class="relative inline-flex cursor-pointer items-center">
-            <input
-              type="checkbox"
-              class="peer sr-only"
-              [checked]="isAutoSaveEnabled()"
-              (change)="setAutoSaveEnabled($any($event.target).checked)" />
-            <div
-              class="h-5 w-9 rounded-full bg-gray-300 peer-focus:outline-none peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-500 after:bg-white after:transition-all after:content-[''] dark:bg-gray-700 dark:border-gray-600">
-            </div>
-          </label>
-        </div>
-      </div>
-    </div>
+    <mtx-general-setting />
     }
 
     @if (activeTab() === 'appearance') {
-    <div class="max-w-2xl">
-      <h3 class="mb-4 text-lg font-semibold">Appearance</h3>
-      <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">Choose the application theme used across the shell and content areas.</p>
-      <div class="grid gap-4 md:grid-cols-2">
-        @for (option of themeOptions; track option.value) {
-        <button
-          type="button"
-          (click)="setTheme(option.value)"
-          class="rounded-2xl border p-4 text-left transition-colors"
-          [ngClass]="
-            selectedTheme() === option.value
-              ? 'border-blue-500 bg-blue-500/10 shadow-sm'
-              : 'border-black/5 bg-white/40 hover:border-black/10 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20'
-          ">
-          <div class="mb-3 flex items-center justify-between">
-            <div class="text-sm font-semibold">{{ option.label }}</div>
-            <div
-              class="h-3 w-3 rounded-full"
-              [ngClass]="option.value === appThemes.Dark ? 'bg-zinc-900 ring-2 ring-zinc-500/50' : 'bg-white ring-2 ring-slate-300'">
-            </div>
-          </div>
-          <div class="text-xs text-gray-500 dark:text-gray-400">{{ option.description }}</div>
-        </button>
-        }
-      </div>
-    </div>
+    <mtx-appearance-setting />
     }
 
     @if (activeTab() === 'ai') {
-    <div class="max-w-2xl">
-      <h3 class="mb-4 text-lg font-semibold">AI</h3>
-      <div class="space-y-6">
-        <div>
-          <label class="mb-1.5 block text-sm font-medium">AI Provider</label>
-          <select
-            class="w-full rounded-xl border border-black/10 bg-white/50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 dark:border-white/10 dark:bg-black/20"
-            [value]="selectedAiProvider()"
-            (change)="setAiProvider($any($event.target).value)">
-            @for (option of aiProviderOptions; track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-            }
-          </select>
-          <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-            @for (option of aiProviderOptions; track option.value) {
-            @if (selectedAiProvider() === option.value) {
-            {{ option.description }}
-            }
-            }
-          </div>
-        </div>
-
-        <div>
-          <label class="mb-1.5 block text-sm font-medium">API Key</label>
-          <input
-            type="password"
-            class="w-full rounded-xl border border-black/10 bg-white/50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 dark:border-white/10 dark:bg-black/20"
-            placeholder="Paste provider API key"
-            [ngModel]="aiApiKey()"
-            (ngModelChange)="setAiApiKey($event)" />
-          <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-            Stored locally on this device. No validation is performed here.
-          </div>
-        </div>
-      </div>
-    </div>
+    <mtx-ai-setting />
     }
 
     @if (activeTab() === 'about') {
-    <div class="max-w-2xl">
-      <h3 class="mb-4 text-lg font-semibold">About</h3>
-      <div class="mt-8 flex flex-col items-center justify-center space-y-3 rounded-3xl border border-black/5 bg-white/40 px-6 py-10 dark:border-white/10 dark:bg-white/5">
-        <div
-          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 via-blue-500 to-cyan-400 shadow-lg">
-          <mtx-svg name="appLogo" svgClass="h-8 w-8 text-white"></mtx-svg>
-        </div>
-        <div class="text-xl font-bold">Matrix Note</div>
-        <div class="text-sm opacity-60">Version 0.1.0</div>
-        <div class="max-w-sm text-center text-sm text-gray-500 dark:text-gray-400">
-          A local-first desktop notebook built with Angular, Tauri, Markdown editing, and live preview.
-        </div>
-      </div>
-    </div>
+    <mtx-about-setting />
     }
   </div>
 </div>
