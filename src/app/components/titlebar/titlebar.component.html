@@ -33,7 +33,7 @@
     </button>
     <button data-no-drag data-tauri-drag-region="false" (click)="toggleMaximizeWindow()"
       class="w-10 h-full flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
-      <mtx-svg name="windowMaximize" svgClass="h-2.5 w-2.5"></mtx-svg>
+      <mtx-svg [name]="isMaximized() ? 'windowRestore' : 'windowMaximize'" svgClass="h-2.5 w-2.5"></mtx-svg>
     </button>
     <button data-no-drag data-tauri-drag-region="false" (click)="closeWindow()"
       class="w-10 h-full flex items-center justify-center opacity-60 hover:opacity-100 hover:bg-red-500 hover:text-white transition-colors">

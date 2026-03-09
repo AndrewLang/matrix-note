@@ -19,6 +19,7 @@
         "title": "Matrix Notebook",
         "width": 1280,
         "height": 800,
+        "backgroundColor": "#e2e8f0",
         "resizable": true,
         "minimizable": true,
         "maximizable": true,

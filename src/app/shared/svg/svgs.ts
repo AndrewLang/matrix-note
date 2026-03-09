@@ -87,6 +87,14 @@ export class Svgs {
     body: `<path d="M 1 1 L 9 1 L 9 9 L 1 9 Z" />`
   };
 
+  static readonly windowRestore: SvgDefinition = {
+    viewBox: "0 0 10 10",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "1.3",
+    body: `<path d="M 1.5 3.25 L 6.75 3.25 L 6.75 8.5 L 1.5 8.5 Z" /><path d="M 3.25 1.5 L 8.5 1.5 L 8.5 6.75 L 7.25 6.75" /><path d="M 3.25 1.5 L 3.25 2.75" />`
+  };
+
   static readonly windowClose: SvgDefinition = {
     viewBox: "0 0 10 10",
     fill: "none",
@@ -308,6 +316,7 @@ export class Svgs {
     moon: Svgs.moon,
     windowMinimize: Svgs.windowMinimize,
     windowMaximize: Svgs.windowMaximize,
+    windowRestore: Svgs.windowRestore,
     windowClose: Svgs.windowClose,
     plus: Svgs.plus,
     close: Svgs.close,
