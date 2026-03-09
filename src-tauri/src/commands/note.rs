@@ -2,7 +2,7 @@ use tauri::State;
 
 use crate::{
     models::note::{ExportedFiles, Note, NoteCategory},
-    note_repository::NoteRepository,
+    services::note_repository::NoteRepository,
 };
 
 #[tauri::command]

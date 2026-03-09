@@ -6,9 +6,12 @@ use std::{
 
 use anyhow::{Context, Result};
 use rusqlite::{params, Connection, OptionalExtension, Row, Transaction};
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 
-use crate::models::note::{ExportedFiles, Note, NoteCategory};
+use crate::{
+    models::note::{ExportedFiles, Note, NoteCategory},
+    services::app_storage::app_storage_dir,
+};
 
 pub struct NoteRepository {
     connection: Mutex<Connection>,
@@ -16,14 +19,7 @@ pub struct NoteRepository {
 
 impl NoteRepository {
     pub fn new(app: &AppHandle) -> Result<Self> {
-        let app_data_dir = app
-            .path()
-            .app_data_dir()
-            .context("failed to resolve app data directory")?;
-
-        fs::create_dir_all(&app_data_dir).context("failed to create app data directory")?;
-
-        let database_path = app_data_dir.join("matrix-note.sqlite");
+        let database_path = app_storage_dir(app)?.join("matrix-note.db");
         let connection = Connection::open(database_path).context("failed to open note database")?;
         connection
             .pragma_update(None, "foreign_keys", "ON")
@@ -34,6 +30,7 @@ impl NoteRepository {
         };
 
         database.initialize_schema()?;
+        database.seed_default_content()?;
         Ok(database)
     }
 
@@ -355,6 +352,54 @@ impl NoteRepository {
         Ok(())
     }
 
+    fn seed_default_content(&self) -> Result<()> {
+        let connection = self.connection()?;
+        let existing_category_count: i64 =
+            connection.query_row("SELECT COUNT(*) FROM note_categories", [], |row| row.get(0))?;
+        if existing_category_count > 0 {
+            return Ok(());
+        }
+
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|duration| duration.as_millis() as i64)
+            .unwrap_or(0);
+
+        connection.execute(
+            "
+            INSERT INTO note_categories (name, parent_id, description, icon, color, is_expanded)
+            VALUES (?1, NULL, ?2, ?3, ?4, 1)
+            ",
+            params![
+                "Matrix Note",
+                "Default workspace",
+                "folderOutline",
+                "text-sky-500"
+            ],
+        )?;
+
+        let category_id = connection.last_insert_rowid();
+        connection.execute(
+            "
+            INSERT INTO notes (title, content, category_id, description, icon, color, created_at, updated_at, tags)
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+            ",
+            params![
+                "Features",
+                Self::default_features_note_content(),
+                category_id,
+                "Overview of Matrix Note",
+                "document",
+                "text-blue-500",
+                now,
+                now,
+                "[]"
+            ],
+        )?;
+
+        Ok(())
+    }
+
     fn connection(&self) -> Result<MutexGuard<'_, Connection>> {
         self.connection
             .lock()
@@ -370,6 +415,10 @@ impl NoteRepository {
 
     fn serialize_tags(tags: &[String]) -> Result<String> {
         serde_json::to_string(tags).context("failed to serialize note tags")
+    }
+
+    fn default_features_note_content() -> &'static str {
+        "# Features\n\n- Local-first notes stored on your device\n- Folder-based organization with nested categories\n- Markdown editing with live preview\n- Window size and position persistence\n- Settings for theme, autosave, and AI provider\n"
     }
 
     fn query_category(

@@ -1,63 +1,56 @@
-@for (node of nodes(); track trackNode($index, node)) {
-<div [class.mt-0.5]="$index > 0">
-  @if (hasChildren(node)) {
-  @if (isEditing(node)) {
-  <div class="flex w-full items-center rounded-md bg-black/5 px-1.5 py-1 dark:bg-white/5" [class]="rowClass(node)">
-    <mtx-svg name="chevronRight"
-      [svgClass]="'h-3 w-3 mr-1 shrink-0 opacity-60 transition-transform duration-200 ease-in-out ' + (isExpanded(node) ? 'rotate-90' : '')" />
-    <mtx-svg [name]="iconName(node)" [svgClass]="iconClass(node)" />
-    <input
-      class="min-w-0 flex-1 bg-transparent text-sm font-medium outline-none"
-      [value]="editingName"
-      autofocus
-      (input)="updateEditingName($event)"
-      (blur)="commitRename(node)"
-      (keydown)="handleRenameKeydown($event, node)"
-      (click)="$event.stopPropagation()">
-  </div>
-  } @else {
-  <button type="button"
-    class="flex w-full items-center rounded-md px-1.5 py-1 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-    [class]="rowClass(node)" [class.bg-sky-100]="isDropTarget(node)" [class.dark:bg-sky-500/20]="isDropTarget(node)"
-    [draggable]="isDraggable(node)" (click)="toggle(node)" (dragstart)="startDrag($event, node)" (dragend)="endDrag()"
-    (dragover)="dragOver($event, node)" (dragleave)="dragLeave($event, node)" (drop)="drop($event, node)"
-    [mtxContextMenu]="node.type === 'category' ? 'category' : 'note-node'" [contextMenuPayload]="node"
-    (dblclick)="startRename(node, $event)">
-    <mtx-svg name="chevronRight"
-      [svgClass]="'h-3 w-3 mr-1 shrink-0 opacity-60 transition-transform duration-200 ease-in-out ' + (isExpanded(node) ? 'rotate-90' : '')" />
-    <mtx-svg [name]="iconName(node)" [svgClass]="iconClass(node)" />
-    <span class="truncate font-medium">{{ node.name }}</span>
-  </button>
-  }
+<div>
+  @for (node of nodes(); track trackNode($index, node)) {
+  <div [class.mt-0.5]="$index > 0">
+    @if (hasChildren(node)) {
+    @if (isEditing(node)) {
+    <div class="flex w-full items-center rounded bg-black/5 px-1.5 py-1 dark:bg-white/5" [class]="rowClass(node)">
+      <mtx-svg name="chevronRight"
+        [svgClass]="'h-3 w-3 mr-1 shrink-0 opacity-60 transition-transform duration-200 ease-in-out ' + (isExpanded(node) ? 'rotate-90' : '')" />
+      <mtx-svg [name]="iconName(node)" [svgClass]="iconClass(node)" />
+      <input class="min-w-0 flex-1 bg-transparent text-sm font-medium outline-none" [value]="editingName" autofocus
+        (input)="updateEditingName($event)" (blur)="commitRename(node)" (keydown)="handleRenameKeydown($event, node)"
+        (click)="$event.stopPropagation()">
+    </div>
+    } @else {
+    <button type="button"
+      class="flex w-full items-center rounded px-1.5 py-1 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+      [class]="rowClass(node)" [class.bg-sky-100]="isDropTarget(node)" [class.dark:bg-sky-500/20]="isDropTarget(node)"
+      [draggable]="isDraggable(node)" (click)="toggle(node)" (dragstart)="startDrag($event, node)" (dragend)="endDrag()"
+      (dragover)="dragOver($event, node)" (dragleave)="dragLeave($event, node)" (drop)="drop($event, node)"
+      [mtxContextMenu]="node.type === 'category' ? 'category' : 'note-node'" [contextMenuPayload]="node"
+      (dblclick)="startRename(node, $event)">
+      <mtx-svg name="chevronRight"
+        [svgClass]="'h-3 w-3 mr-1 shrink-0 opacity-60 transition-transform duration-200 ease-in-out ' + (isExpanded(node) ? 'rotate-90' : '')" />
+      <mtx-svg [name]="iconName(node)" [svgClass]="iconClass(node)" />
+      <span class="truncate font-medium">{{ node.name }}</span>
+    </button>
+    }
 
-  @if (isExpanded(node)) {
-  <div class="mt-0.5" [style.padding-left]="childPadding()">
-    <mtx-tree [nodes]="node.children ?? []" [depth]="depth() + 1" />
+    @if (isExpanded(node)) {
+    <div class="mt-0.5" [style.padding-left]="childPadding()">
+      <mtx-tree [nodes]="node.children ?? []" [depth]="depth() + 1" />
+    </div>
+    }
+    } @else {
+    @if (isEditing(node)) {
+    <div class="flex w-full items-center rounded bg-black/5 px-1.5 py-1 dark:bg-white/5" [class]="rowClass(node)">
+      <mtx-svg [name]="iconName(node)" [svgClass]="iconClass(node)" />
+      <input class="min-w-0 flex-1 bg-transparent text-sm outline-none" [value]="editingName" autofocus
+        (input)="updateEditingName($event)" (blur)="commitRename(node)" (keydown)="handleRenameKeydown($event, node)"
+        (click)="$event.stopPropagation()">
+    </div>
+    } @else {
+    <button type="button"
+      class="flex w-full items-center rounded px-1.5 py-1 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+      [class]="rowClass(node)" [attr.title]="node.description || null" [draggable]="isDraggable(node)"
+      [mtxContextMenu]="node.type === 'category' ? 'category' : 'note-node'" [contextMenuPayload]="node"
+      (click)="select(node)" (dragstart)="startDrag($event, node)" (dragend)="endDrag()"
+      (dblclick)="startRename(node, $event)">
+      <mtx-svg [name]="iconName(node)" [svgClass]="iconClass(node)" />
+      <span class="truncate">{{ node.name }}</span>
+    </button>
+    }
+    }
   </div>
-  }
-  } @else {
-  @if (isEditing(node)) {
-  <div class="flex w-full items-center rounded-md bg-black/5 px-1.5 py-1 dark:bg-white/5" [class]="rowClass(node)">
-    <mtx-svg [name]="iconName(node)" [svgClass]="iconClass(node)" />
-    <input
-      class="min-w-0 flex-1 bg-transparent text-sm outline-none"
-      [value]="editingName"
-      autofocus
-      (input)="updateEditingName($event)"
-      (blur)="commitRename(node)"
-      (keydown)="handleRenameKeydown($event, node)"
-      (click)="$event.stopPropagation()">
-  </div>
-  } @else {
-  <button type="button"
-    class="flex w-full items-center rounded-md px-1.5 py-1 text-left transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-    [class]="rowClass(node)" [attr.title]="node.description || null" [draggable]="isDraggable(node)"
-    [mtxContextMenu]="node.type === 'category' ? 'category' : 'note-node'" [contextMenuPayload]="node"
-    (click)="select(node)" (dragstart)="startDrag($event, node)" (dragend)="endDrag()" (dblclick)="startRename(node, $event)">
-    <mtx-svg [name]="iconName(node)" [svgClass]="iconClass(node)" />
-    <span class="truncate">{{ node.name }}</span>
-  </button>
-  }
   }
 </div>
-}
