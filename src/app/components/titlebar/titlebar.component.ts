@@ -1,5 +1,4 @@
-import { DOCUMENT } from "@angular/common";
-import { Component, EventEmitter, OnDestroy, Output, inject, signal } from "@angular/core";
+import { Component, EventEmitter, OnDestroy, Output, signal } from "@angular/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import type { UnlistenFn } from "@tauri-apps/api/event";
 import { SvgComponent } from "../../shared/svg/svg.component";
@@ -10,9 +9,8 @@ import { SvgComponent } from "../../shared/svg/svg.component";
   templateUrl: "./titlebar.component.html"
 })
 export class TitlebarComponent {
-  private readonly document = inject(DOCUMENT);
+  private static readonly githubUrl = "https://github.com/AndrewLang/matrix-note";
   private unlistenResize: UnlistenFn | null = null;
-  readonly isDark = signal(false);
   readonly isMaximized = signal(false);
   @Output() readonly openSettings = new EventEmitter<void>();
 
@@ -20,10 +18,6 @@ export class TitlebarComponent {
     if (typeof window === "undefined") {
       return;
     }
-
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    this.isDark.set(prefersDark);
-    this.document.documentElement.classList.toggle("dark", prefersDark);
     void this.bindWindowState();
   }
 
@@ -31,16 +25,12 @@ export class TitlebarComponent {
     this.unlistenResize?.();
   }
 
-  toggleTheme(): void {
-    this.isDark.update((value) => {
-      const next = !value;
-      this.document.documentElement.classList.toggle("dark", next);
-      return next;
-    });
-  }
-
   requestSettingsOpen(): void {
     this.openSettings.emit();
+  }
+
+  openGithub(): void {
+    window.open(TitlebarComponent.githubUrl, "_blank", "noopener,noreferrer");
   }
 
   async minimizeWindow(): Promise<void> {

@@ -4,12 +4,14 @@ import { EditableDocument } from "../models/document";
 import { SettingNames } from "../models/setting.names";
 import { Note } from "../models/note";
 import { NoteService } from "./note.service";
+import { SettingsService } from "./settings.service";
 
 @Injectable({
   providedIn: "root"
 })
 export class WorkspaceService {
   private readonly noteService = inject(NoteService);
+  private readonly settingsService = inject(SettingsService);
   private readonly autoSaveDelayMs = 750;
   private readonly autoSaveTimers = new Map<number, ReturnType<typeof setTimeout>>();
   private readonly isBrowser: boolean;
@@ -83,6 +85,9 @@ export class WorkspaceService {
       tabs.map((tab) => (tab.id === document.id ? document : tab))
     );
     this.noteService.updateNoteContent(document.id, document.content);
+    if (!this.settingsService.autoSaveEnabled()) {
+      return;
+    }
     this.scheduleAutoSave(document.id);
   }
 
