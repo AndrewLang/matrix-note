@@ -2,6 +2,7 @@ import { Component, HostListener, inject } from "@angular/core";
 import { ContextMenuComponent } from "../context-menu/context-menu.component";
 import { DialogService } from "../../services/dialog.service";
 import { NoteService } from "../../services/note.service";
+import { WorkspaceService } from "../../services/workspace.service";
 import { DialogComponent } from "../dialog/dialog.component";
 import { SettingsComponent } from "../settings/settings.component";
 import { SidebarComponent } from "../sidebar/sidebar.component";
@@ -16,6 +17,7 @@ import { WorkspaceComponent } from "../workspace/workspace.component";
 export class HomeComponent {
   private readonly dialogService = inject(DialogService);
   private readonly noteService = inject(NoteService);
+  private readonly workspaceService = inject(WorkspaceService);
 
   constructor() {
     void this.loadInitialData();
@@ -37,6 +39,7 @@ export class HomeComponent {
         this.noteService.loadCategories(),
         this.noteService.loadNotes()
       ]);
+      this.workspaceService.restoreSession();
     } catch (error) {
       console.error("Failed to load notes.", error);
     }

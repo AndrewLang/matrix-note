@@ -1,5 +1,7 @@
-import { Injectable, computed, inject, signal } from "@angular/core";
+import { isPlatformBrowser } from "@angular/common";
+import { Inject, Injectable, PLATFORM_ID, computed, inject, signal } from "@angular/core";
 import { EditableDocument } from "../models/document";
+import { SettingNames } from "../models/setting.names";
 import { Note } from "../models/note";
 import { NoteService } from "./note.service";
 
@@ -10,21 +12,28 @@ export class WorkspaceService {
   private readonly noteService = inject(NoteService);
   private readonly autoSaveDelayMs = 750;
   private readonly autoSaveTimers = new Map<number, ReturnType<typeof setTimeout>>();
+  private readonly isBrowser: boolean;
 
   readonly tabs = signal<EditableDocument[]>([]);
-  readonly activeTabId = signal<number | null>(this.tabs()[0]?.id ?? null);
+  readonly activeTabId = signal<number | null>(null);
   readonly activeTab = computed(() =>
     this.tabs().find((tab) => tab.id === this.activeTabId()) ?? null
   );
 
+  constructor(@Inject(PLATFORM_ID) platformId: object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+
   selectTab(id: number): void {
     this.activeTabId.set(id);
+    this.persistWorkspaceState();
   }
 
   openNote(noteId: number): void {
     const existingTab = this.tabs().find((tab) => tab.id === noteId);
     if (existingTab) {
       this.activeTabId.set(existingTab.id);
+      this.persistWorkspaceState();
       return;
     }
 
@@ -36,6 +45,7 @@ export class WorkspaceService {
     const document = this.toEditableDocument(note);
     this.tabs.update((tabs) => [...tabs, document]);
     this.activeTabId.set(document.id);
+    this.persistWorkspaceState();
   }
 
   createNoteTab(): Promise<void> {
@@ -53,16 +63,19 @@ export class WorkspaceService {
     this.tabs.set(next);
 
     if (this.activeTabId() !== id) {
+      this.persistWorkspaceState();
       return;
     }
 
     if (next.length === 0) {
       this.activeTabId.set(null);
+      this.persistWorkspaceState();
       return;
     }
 
     const fallbackIndex = Math.max(0, index - 1);
     this.activeTabId.set(next[fallbackIndex].id);
+    this.persistWorkspaceState();
   }
 
   updateDocument(document: EditableDocument): void {
@@ -77,6 +90,29 @@ export class WorkspaceService {
     this.tabs.update((tabs) =>
       tabs.map((tab) => (tab.id === noteId ? { ...tab, title } : tab))
     );
+    this.persistWorkspaceState();
+  }
+
+  restoreSession(): void {
+    const savedTabIds = this.readSetting<number[]>(SettingNames.workspaceOpenTabIdsKey) ?? [];
+    const savedActiveTabId = this.readSetting<number | null>(SettingNames.workspaceActiveTabIdKey);
+
+    const restoredTabs = savedTabIds
+      .map((noteId) => this.noteService.getNoteById(noteId))
+      .filter((note): note is Note => note !== undefined)
+      .map((note) => this.toEditableDocument(note));
+
+    this.tabs.set(restoredTabs);
+
+    const hasSavedActiveTab = savedActiveTabId !== null
+      && restoredTabs.some((tab) => tab.id === savedActiveTabId);
+    this.activeTabId.set(
+      hasSavedActiveTab
+        ? savedActiveTabId
+        : (restoredTabs[0]?.id ?? null)
+    );
+
+    this.persistWorkspaceState();
   }
 
   private async createAndOpenNoteTab(): Promise<void> {
@@ -136,6 +172,38 @@ export class WorkspaceService {
       );
     } catch (error) {
       console.error(`Failed to auto-save note ${noteId}.`, error);
+    }
+  }
+
+  private persistWorkspaceState(): void {
+    if (!this.isBrowser) {
+      return;
+    }
+
+    localStorage.setItem(
+      SettingNames.workspaceOpenTabIdsKey,
+      JSON.stringify(this.tabs().map((tab) => tab.id))
+    );
+    localStorage.setItem(
+      SettingNames.workspaceActiveTabIdKey,
+      JSON.stringify(this.activeTabId())
+    );
+  }
+
+  private readSetting<T>(key: string): T | null {
+    if (!this.isBrowser) {
+      return null;
+    }
+
+    const storedValue = localStorage.getItem(key);
+    if (storedValue === null) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(storedValue) as T;
+    } catch {
+      return null;
     }
   }
 }
