@@ -1,0 +1,15 @@
+@if (activeMenu(); as menu) {
+<div
+  class="fixed z-[60] min-w-[180px] overflow-hidden rounded-lg border border-black/10 bg-white/95 shadow-2xl shadow-black/20 backdrop-blur-md dark:border-white/10 dark:bg-[rgba(30,30,35,0.96)]"
+  [style.left.px]="menu.x" [style.top.px]="menu.y" (click)="$event.stopPropagation()">
+  @for (item of menu.items; track item.id) {
+  <button type="button"
+    class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+    [ngClass]="item.description === 'danger' ? 'text-rose-600 dark:text-rose-400' : 'text-slate-700 dark:text-slate-200'"
+    (click)="run(item)">
+    <mtx-svg [name]="item.icon || 'menu'" svgClass="h-4 w-4 shrink-0 opacity-80"></mtx-svg>
+    {{ item.name }}
+  </button>
+  }
+</div>
+}

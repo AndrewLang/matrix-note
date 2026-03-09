@@ -1,4 +1,5 @@
-import { Component, inject } from "@angular/core";
+import { Component, HostListener, inject } from "@angular/core";
+import { ContextMenuComponent } from "../context-menu/context-menu.component";
 import { DialogService } from "../../services/dialog.service";
 import { NoteService } from "../../services/note.service";
 import { DialogComponent } from "../dialog/dialog.component";
@@ -9,7 +10,7 @@ import { WorkspaceComponent } from "../workspace/workspace.component";
 
 @Component({
   selector: "mtx-home",
-  imports: [DialogComponent, TitlebarComponent, SidebarComponent, WorkspaceComponent],
+  imports: [ContextMenuComponent, DialogComponent, TitlebarComponent, SidebarComponent, WorkspaceComponent],
   templateUrl: "./home.component.html"
 })
 export class HomeComponent {
@@ -39,5 +40,10 @@ export class HomeComponent {
     } catch (error) {
       console.error("Failed to load notes.", error);
     }
+  }
+
+  @HostListener("document:contextmenu", ["$event"])
+  disableBrowserContextMenu(event: MouseEvent): void {
+    event.preventDefault();
   }
 }

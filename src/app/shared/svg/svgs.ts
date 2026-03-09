@@ -111,6 +111,30 @@ export class Svgs {
     body: `<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>`
   };
 
+  static readonly rename: SvgDefinition = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    body: `<path stroke-linecap="round" stroke-linejoin="round" d="M4 20h4l10-10-4-4L4 16v4z"></path><path stroke-linecap="round" stroke-linejoin="round" d="m12 6 4 4"></path>`
+  };
+
+  static readonly export: SvgDefinition = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    body: `<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12"></path><path stroke-linecap="round" stroke-linejoin="round" d="m7 10 5 5 5-5"></path><path stroke-linecap="round" stroke-linejoin="round" d="M5 21h14"></path>`
+  };
+
+  static readonly trash: SvgDefinition = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    body: `<path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18"></path><path stroke-linecap="round" stroke-linejoin="round" d="M8 6V4h8v2"></path><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l1 14h10l1-14"></path><path stroke-linecap="round" stroke-linejoin="round" d="M10 10v6M14 10v6"></path>`
+  };
+
   static readonly bold: SvgDefinition = {
     viewBox: "0 0 24 24",
     fill: "none",
@@ -287,6 +311,9 @@ export class Svgs {
     windowClose: Svgs.windowClose,
     plus: Svgs.plus,
     close: Svgs.close,
+    rename: Svgs.rename,
+    export: Svgs.export,
+    trash: Svgs.trash,
     bold: Svgs.bold,
     italic: Svgs.italic,
     heading: Svgs.heading,

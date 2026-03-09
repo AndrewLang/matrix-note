@@ -1,10 +1,11 @@
 import { Component, computed, input } from "@angular/core";
+import { ContextMenuDirective } from "../../directives/context-menu.directive";
 import { TreeNode } from "../../models/tree";
 import { SvgComponent } from "../../shared/svg/svg.component";
 
 @Component({
   selector: "mtx-tree",
-  imports: [SvgComponent, TreeComponent],
+  imports: [ContextMenuDirective, SvgComponent, TreeComponent],
   templateUrl: "./tree.component.html"
 })
 export class TreeComponent {

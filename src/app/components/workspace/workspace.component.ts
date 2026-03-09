@@ -4,6 +4,7 @@ import { Command } from "../../models/command";
 import { EditableDocument } from "../../models/document";
 import { ViewOrientation, ViewOrientations } from "../../models/uistates";
 import { CommandService } from "../../services/command.service";
+import { ContextMenuDirective } from "../../directives/context-menu.directive";
 import { DialogService } from "../../services/dialog.service";
 import { UiStateService } from "../../services/uistate.service";
 import { WorkspaceService } from "../../services/workspace.service";
@@ -13,7 +14,7 @@ import { WorkspaceTabComponent } from "./workspace-tab/workspace-tab.component";
 
 @Component({
   selector: "mtx-workspace",
-  imports: [NgClass, SvgComponent, WorkspaceTabComponent],
+  imports: [ContextMenuDirective, NgClass, SvgComponent, WorkspaceTabComponent],
   host: {
     class: "flex-1 min-w-0 min-h-0 w-full h-full flex"
   },
