@@ -1,9 +1,6 @@
-import type { Config } from "tailwindcss";
-
-const config: Config = {
-  content: [
-    "./src/**/*.{html,ts}"
-  ],
+/** @type {import('tailwindcss').Config} */
+const config = {
+  content: ["./src/**/*.{html,ts}"],
   darkMode: "class",
   theme: {
     extend: {
