@@ -311,6 +311,22 @@ export class Svgs {
     body: `<path stroke-linecap="round" stroke-linejoin="round" d="M12 3l1.7 4.8L18.5 9.5l-4.8 1.7L12 16l-1.7-4.8L5.5 9.5l4.8-1.7L12 3z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M19 3v4M21 5h-4M5 16v5M7.5 18.5h-5"></path>`
   };
 
+  static readonly bookmark: SvgDefinition = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    body: `<path stroke-linecap="round" stroke-linejoin="round" d="M7 4h10a1 1 0 0 1 1 1v15l-6-3-6 3V5a1 1 0 0 1 1-1z"></path>`
+  };
+
+  static readonly tag: SvgDefinition = {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    body: `<path stroke-linecap="round" stroke-linejoin="round" d="M20 13l-7 7-9-9V4h7l9 9z"></path><circle cx="7.5" cy="7.5" r="1.25" fill="currentColor" stroke="none"></circle>`
+  };
+
   private static readonly registry: Record<string, SvgDefinition> = {
     menu: Svgs.menu,
     "layout-sidebar-inset": Svgs.layoutSidebarInset,
@@ -350,7 +366,9 @@ export class Svgs {
     cloud: Svgs.cloud,
     circlePlus: Svgs.circlePlus,
     codeBrackets: Svgs.codeBrackets,
-    sparkles: Svgs.sparkles
+    sparkles: Svgs.sparkles,
+    bookmark: Svgs.bookmark,
+    tag: Svgs.tag
   };
 
   static get(name: string): SvgDefinition | null {

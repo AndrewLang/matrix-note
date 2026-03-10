@@ -1,17 +1,18 @@
 import { Injectable, inject, signal } from "@angular/core";
+import { DialogMessageComponent } from "../components/dialog/dialog-message.component";
+import { CustomizeNodeComponent } from "../components/dialog/customize.node.component";
 import { Command } from "../models/command";
-import { DialogService } from "./dialog.service";
-import { NoteService } from "./note.service";
-import { WorkspaceService } from "./workspace.service";
 import {
   ContextMenuPayload,
   ContextMenuState,
-  ContextMenuTargetTypes,
-  ContextMenuTargetType
+  ContextMenuTargetType,
+  ContextMenuTargetTypes
 } from "../models/context-menu";
 import { EditableDocument } from "../models/document";
 import { TreeNode } from "../models/tree";
-import { DialogMessageComponent } from "../components/dialog/dialog-message.component";
+import { DialogService } from "./dialog.service";
+import { NoteService } from "./note.service";
+import { WorkspaceService } from "./workspace.service";
 
 @Injectable({
   providedIn: "root"
@@ -71,6 +72,12 @@ export class ContextMenuService {
       },
       {
         id: this.commandId(node.id, 3),
+        name: "Customize",
+        icon: "settings",
+        action: async () => this.editCategoryAppearance(node)
+      },
+      {
+        id: this.commandId(node.id, 4),
         name: "Remove",
         icon: "trash",
         description: "danger",
@@ -95,6 +102,12 @@ export class ContextMenuService {
       },
       {
         id: this.commandId(node.id, 13),
+        name: "Customize",
+        icon: "settings",
+        action: async () => this.editNoteAppearance(node)
+      },
+      {
+        id: this.commandId(node.id, 14),
         name: "Remove",
         icon: "trash",
         description: "danger",
@@ -161,6 +174,42 @@ export class ContextMenuService {
     }
 
     await this.noteService.exportNote(noteId, destinationPath);
+  }
+
+  private async editCategoryAppearance(node: TreeNode): Promise<void> {
+    this.dialogService.open(CustomizeNodeComponent, {
+      title: "Category Appearance",
+      closable: true,
+      closeOnBackdrop: false,
+      closeOnEscape: false,
+      dialogClass: "max-w-[560px]",
+      bodyClass: "overflow-hidden",
+      componentInputs: {
+        entityType: "category",
+        entityId: node.id,
+        entityName: node.name,
+        initialIcon: node.icon,
+        initialColor: node.color
+      }
+    });
+  }
+
+  private async editNoteAppearance(node: TreeNode): Promise<void> {
+    this.dialogService.open(CustomizeNodeComponent, {
+      title: "Note Appearance",
+      closable: true,
+      closeOnBackdrop: false,
+      closeOnEscape: false,
+      dialogClass: "max-w-[560px]",
+      bodyClass: "overflow-hidden",
+      componentInputs: {
+        entityType: "note",
+        entityId: node.id,
+        entityName: node.name,
+        initialIcon: node.icon,
+        initialColor: node.color
+      }
+    });
   }
 
   private confirmRemoveCategory(categoryId: number, categoryName: string): void {

@@ -418,7 +418,117 @@ impl NoteRepository {
     }
 
     fn default_features_note_content() -> &'static str {
-        "# Features\n\n- Local-first notes stored on your device\n- Folder-based organization with nested categories\n- Markdown editing with live preview\n- Window size and position persistence\n- Settings for theme, autosave, and AI provider\n"
+        r#"# Matrix Note Features
+
+Matrix Note is a **local-first Markdown notebook** built for simplicity, speed, and structured knowledge management.
+It allows users to create, organize, and edit notes efficiently while keeping full control of their data.
+
+```mermaid
+graph TD
+User --> Editor[Markdown Editor]
+Editor --> Preview[Live Preview]
+Editor --> Storage[Local First Storage]
+Storage --> Files[Markdown Files]
+Editor --> AI[AI Assistant]
+Editor --> OSS[Open Source Community]
+Preview --> User
+```
+---
+
+# Core Features
+
+## Local-First Storage
+
+Matrix Note follows a **local-first philosophy**.
+All notes are stored directly on your machine.
+
+Benefits include:
+
+- full ownership of your data
+- privacy and security
+- fast access without internet
+- easy backup and version control
+
+---
+
+## Simple Note Organization
+
+Matrix Note makes it easy to **organize and navigate knowledge**.
+
+Key capabilities:
+
+- structured note groups
+- folder-based organization
+- fast search
+- quick navigation
+
+---
+
+## Markdown Editor with Live Preview
+
+Matrix Note provides a **clean Markdown editing experience** with instant preview.
+
+Supported Markdown features include:
+
+- headings and text formatting
+- lists and tables
+- code blocks with syntax highlighting
+- diagrams such as Mermaid
+
+Example:
+```rust
+fn main() {
+    println!("Hello Matrix Note");
+}
+```
+---
+## Open Source
+
+Matrix Note is **open source**, allowing anyone to inspect, modify, and contribute to the project.
+
+Benefits include:
+
+- transparency and trust
+- community contributions
+- extensibility and customization
+- long-term sustainability
+
+Developers can extend Matrix Note with new features, integrations, or plugins to fit their workflow.
+
+---
+
+## AI Assistance (Coming Soon)
+
+Future versions of Matrix Note will include **AI-assisted writing tools** to improve productivity.
+
+Planned capabilities:
+
+- generate note content
+- summarize long notes
+- rewrite and improve text
+- generate diagrams or documentation
+- assist with coding notes
+
+Example prompt:
+
+```
+Explain Rust ownership in simple terms
+```
+
+---
+
+# Summary
+
+Matrix Note focuses on four core principles:
+
+- **Local-first data ownership**
+- **Simple and structured note organization**
+- **Markdown editing with live preview**
+- **Open source and extensible**
+- **Future AI-powered knowledge tools**
+
+A **fast, minimal, developer-friendly notebook** built for modern workflows.
+"#
     }
 
     fn query_category(

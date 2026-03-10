@@ -1,0 +1,70 @@
+<div class="space-y-5 p-4 text-sm text-gray-700 dark:text-gray-200">
+  <div class="rounded-xl border border-black/10 bg-black/[0.03] p-4 dark:border-white/10 dark:bg-white/[0.04]">
+    <div class="flex items-center gap-3">
+      <div
+        class="flex h-11 w-11 items-center justify-center rounded-xl border border-black/10 bg-white text-gray-700 dark:border-white/10 dark:bg-black/20 dark:text-gray-200">
+        <mtx-svg [name]="previewIcon()" [svgClass]="'h-5 w-5 ' + previewColorClass()" />
+      </div>
+      <div class="min-w-0">
+        <p class="truncate font-medium">{{ entityName() }}</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          {{ entityType() === "category" ? "Category appearance" : "Note appearance" }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <section class="space-y-2">
+    <div class="flex items-center justify-between">
+      <h3 class="font-medium">Icon</h3>
+      <button type="button"
+        class="text-xs text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+        (click)="resetIcon()">
+        Use default
+      </button>
+    </div>
+    <div class="grid grid-cols-4 gap-2 sm:grid-cols-5">
+      @for (icon of iconOptions; track icon) {
+      <button type="button" class="flex h-12 items-center justify-center rounded-xl border transition-colors"
+        [ngClass]="selectedIcon() === icon
+          ? 'border-sky-500 bg-sky-500/10 text-sky-600 dark:text-sky-300'
+          : 'border-black/10 bg-white text-gray-600 hover:border-black/20 hover:text-gray-900 dark:border-white/10 dark:bg-white/[0.03] dark:text-gray-300 dark:hover:border-white/20 dark:hover:text-white'"
+        [attr.aria-pressed]="selectedIcon() === icon" (click)="selectIcon(icon)">
+        <mtx-svg [name]="icon" [svgClass]="'h-5 w-5 ' + previewColorClass()"></mtx-svg>
+      </button>
+      }
+    </div>
+  </section>
+
+  <section class="space-y-2">
+    <div class="flex items-center justify-between">
+      <h3 class="font-medium">Color</h3>
+      <button type="button"
+        class="text-xs text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+        (click)="resetColor()">
+        Use default
+      </button>
+    </div>
+    <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+      @for (color of colorOptions; track color.label) {
+      <button type="button"
+        class="flex h-14 pt-3 flex-col items-center justify-center gap-1 rounded-xl border text-[11px] transition-colors"
+        [ngClass]="selectedColor() === color.value
+          ? 'border-sky-500 bg-sky-500/10'
+          : 'border-black/10 bg-white hover:border-black/20 dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-white/20'"
+        [attr.aria-pressed]="selectedColor() === color.value" (click)="selectColor(color.value)">
+        <span class="h-4 w-4 rounded-full" [ngClass]="color.swatchClass"></span>
+        <span>{{ color.label }}</span>
+      </button>
+      }
+    </div>
+  </section>
+
+  <div class="flex justify-end gap-2 pt-1">
+    <button type="button"
+      class="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-60"
+      [disabled]="isSaving()" (click)="save()">
+      Save
+    </button>
+  </div>
+</div>
