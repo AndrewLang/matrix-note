@@ -73,6 +73,16 @@ pub fn get_note(
 }
 
 #[tauri::command]
+pub fn search_notes(
+    keyword: String,
+    repository: State<'_, NoteRepository>,
+) -> Result<Vec<Note>, String> {
+    repository
+        .search_notes(&keyword)
+        .map_err(|error| error.to_string())
+}
+
+#[tauri::command]
 pub fn save_note(note: Note, repository: State<'_, NoteRepository>) -> Result<Note, String> {
     repository
         .save_note(note)

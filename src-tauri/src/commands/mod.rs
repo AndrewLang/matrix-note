@@ -12,6 +12,7 @@ pub fn register<R: Runtime>(builder: Builder<R>) -> Builder<R> {
         note::delete_category,
         note::get_notes,
         note::get_note,
+        note::search_notes,
         note::save_note,
         note::update_note,
         note::delete_note,

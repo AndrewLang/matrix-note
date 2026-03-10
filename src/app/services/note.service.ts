@@ -191,6 +191,11 @@ export class NoteService {
       .then((note) => note ? this.normalizeNote(note) : null);
   }
 
+  searchNotes(keyword: string): Promise<Note[]> {
+    return invoke<Note[]>("search_notes", { keyword })
+      .then((notes) => notes.map((note) => this.normalizeNote(note)));
+  }
+
   async saveNote(note: Note): Promise<Note> {
     const savedNote = this.normalizeNote(
       await invoke<Note>("save_note", { note })

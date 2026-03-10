@@ -6,11 +6,41 @@
   </div>
 
   <div class="flex-1 flex justify-center h-full items-center">
-    <div data-no-drag
-      class="flex h-6 w-[300px] items-center rounded-md border border-black/10 bg-black/8 px-2.5 text-[11px] transition-colors hover:bg-black/10 dark:border-transparent dark:bg-white/5 dark:hover:border-white/10">
-      <mtx-svg name="search" svgClass="mr-2 h-3 w-3 opacity-60"></mtx-svg>
-      <input data-tauri-drag-region="false" type="text" placeholder="Search files, contents..."
-        class="bg-transparent border-none text-inherit focus:outline-none w-full placeholder-gray-500 dark:placeholder-gray-400" />
+    <div #searchContainer data-no-drag class="relative">
+      <div
+        class="flex h-6 w-[300px] items-center rounded-md border border-black/10 bg-black/8 px-2.5 text-[11px] transition-colors hover:bg-black/10 dark:border-transparent dark:bg-white/5 dark:hover:border-white/10"
+        [ngClass]="isSearchOpen() ? 'border-sky-500/50 bg-black/10 dark:border-sky-500/50 dark:bg-white/10' : ''">
+        <mtx-svg name="search" svgClass="mr-2 h-3 w-3 opacity-60"></mtx-svg>
+        <input data-tauri-drag-region="false" type="text" placeholder="Search notes..."
+          class="bg-transparent border-none text-inherit focus:outline-none w-full placeholder-gray-500 dark:placeholder-gray-400"
+          [value]="searchTerm()" (input)="updateSearchTerm($event)" (focus)="openSearch()" />
+      </div>
+
+      @if (isSearchOpen()) {
+      <div data-tauri-drag-region="false"
+        class="absolute left-0 top-[calc(100%+6px)] z-50 w-[300px] overflow-hidden rounded-lg border border-black/10 bg-white shadow-lg dark:border-white/10 dark:bg-slate-900">
+        @if (isSearching()) {
+        <div class="px-3 py-3 text-xs text-gray-500 dark:text-gray-400">
+          Searching...
+        </div>
+        } @else if (searchResults().length > 0) {
+        <div class="max-h-72 overflow-auto py-1">
+          @for (note of searchResults(); track note.id) {
+          <button type="button"
+            class="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 transition-colors hover:bg-black/[0.04] dark:text-gray-200 dark:hover:bg-white/[0.06]"
+            (click)="openSearchResult(note.id)">
+            <mtx-svg [name]="note.icon || 'document'" [svgClass]="'h-3.5 w-3.5 shrink-0 ' + (note.color || 'text-gray-500 dark:text-gray-400')"></mtx-svg>
+            <span class="truncate">{{ note.title }}</span>
+          </button>
+          }
+        </div>
+        } @else {
+        <div class="px-3 py-3 text-xs text-gray-500 dark:text-gray-400">
+          No result found
+        </div>
+        }
+      </div>
+      }
     </div>
   </div>
 

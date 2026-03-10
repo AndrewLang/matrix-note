@@ -184,6 +184,30 @@ impl NoteRepository {
             .map_err(Into::into)
     }
 
+    pub fn search_notes(&self, keyword: &str) -> Result<Vec<Note>> {
+        let trimmed = keyword.trim();
+        if trimmed.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        let connection = self.connection()?;
+        let search_term = format!("%{}%", trimmed.replace('%', "\\%").replace('_', "\\_"));
+        let mut statement = connection.prepare(
+            "
+            SELECT id, title, content, category_id, description, icon, color, created_at, updated_at, tags
+            FROM notes
+            WHERE title LIKE ?1 ESCAPE '\\'
+               OR content LIKE ?1 ESCAPE '\\'
+               OR COALESCE(description, '') LIKE ?1 ESCAPE '\\'
+            ORDER BY updated_at DESC, id DESC
+            LIMIT 20
+            ",
+        )?;
+
+        let rows = statement.query_map([search_term], Self::map_note)?;
+        Self::collect_rows(rows)
+    }
+
     pub fn save_note(&self, note: Note) -> Result<Note> {
         let connection = self.connection()?;
         let tags = Self::serialize_tags(&note.tags)?;
