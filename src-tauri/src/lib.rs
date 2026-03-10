@@ -30,6 +30,7 @@ impl AppBuilder {
 
     fn builder(&self) -> Builder<tauri::Wry> {
         let builder = Builder::default()
+            .plugin(tauri_plugin_dialog::init())
             .plugin(tauri_plugin_shell::init())
             .setup(|app| {
                 let repository = NoteRepository::new(&app.handle())?;

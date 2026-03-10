@@ -1,4 +1,5 @@
 import { Injectable, inject, signal } from "@angular/core";
+import { open, save } from "@tauri-apps/plugin-dialog";
 import { DialogMessageComponent } from "../components/dialog/dialog-message.component";
 import { CustomizeNodeComponent } from "../components/dialog/customize.node.component";
 import { Command } from "../models/command";
@@ -159,8 +160,13 @@ export class ContextMenuService {
   }
 
   private async exportCategory(categoryId: number, categoryName: string): Promise<void> {
-    const destinationDir = window.prompt("Export category to directory", categoryName)?.trim();
-    if (!destinationDir) {
+    const destinationDir = await open({
+      directory: true,
+      multiple: false,
+      defaultPath: categoryName
+    });
+
+    if (!destinationDir || Array.isArray(destinationDir)) {
       return;
     }
 
@@ -168,12 +174,21 @@ export class ContextMenuService {
   }
 
   private async exportNote(noteId: number, noteTitle: string): Promise<void> {
-    const destinationPath = window.prompt("Export note to file", noteTitle)?.trim();
+    const destinationPath = await save({
+      defaultPath: this.defaultNoteFileName(noteTitle),
+      filters: [
+        {
+          name: "Markdown",
+          extensions: ["md"]
+        }
+      ]
+    });
+
     if (!destinationPath) {
       return;
     }
 
-    await this.noteService.exportNote(noteId, destinationPath);
+    await this.noteService.exportNote(noteId, this.ensureMarkdownExtension(destinationPath));
   }
 
   private async editCategoryAppearance(node: TreeNode): Promise<void> {
@@ -311,5 +326,18 @@ export class ContextMenuService {
 
   private commandId(entityId: number, actionId: number): number {
     return entityId * 100 + actionId;
+  }
+
+  private defaultNoteFileName(noteTitle: string): string {
+    const trimmed = noteTitle.trim();
+    if (!trimmed) {
+      return "untitled.md";
+    }
+
+    return trimmed.toLowerCase().endsWith(".md") ? trimmed : `${trimmed}.md`;
+  }
+
+  private ensureMarkdownExtension(path: string): string {
+    return path.toLowerCase().endsWith(".md") ? path : `${path}.md`;
   }
 }

@@ -27,8 +27,6 @@ export class HomeComponent {
     this.dialogService.open(SettingsComponent, {
       title: "Settings",
       closable: true,
-      closeOnBackdrop: true,
-      closeOnEscape: true,
       dialogClass: "max-w-[700px] h-[500px]",
       bodyClass: "overflow-hidden"
     });

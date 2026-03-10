@@ -42,8 +42,8 @@ export class DialogService {
       config: {
         title: config.title ?? "",
         closable: config.closable ?? true,
-        closeOnBackdrop: config.closeOnBackdrop ?? true,
-        closeOnEscape: config.closeOnEscape ?? true,
+        closeOnBackdrop: config.closeOnBackdrop ?? false,
+        closeOnEscape: config.closeOnEscape ?? false,
         buttons: config.buttons ?? [],
         dialogClass: config.dialogClass ?? "",
         bodyClass: config.bodyClass ?? "",
