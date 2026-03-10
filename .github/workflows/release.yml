@@ -39,9 +39,6 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
-      - name: Build frontend
-        run: npm run frontend:build
-
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
