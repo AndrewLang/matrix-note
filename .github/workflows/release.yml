@@ -67,7 +67,9 @@ jobs:
             librsvg2-dev \
             patchelf
 
+      # ── Linux / macOS: tauri-action builds, creates the release, and uploads ──
       - name: Build and publish Tauri release
+        if: runner.os != 'Windows'
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -78,3 +80,132 @@ jobs:
           releaseDraft: false
           prerelease: false
           generateReleaseNotes: true
+
+      # ── Windows: build → sign → verify → upload ──────────────────────────────
+      #
+      # Code-signing avoids the Windows SmartScreen "Unknown publisher" warning.
+      # Signing is skipped automatically when secrets are absent (e.g., forks,
+      # pull-request workflows, or when a certificate has not yet been configured).
+      #
+      # Required GitHub repository secrets
+      # ───────────────────────────────────
+      #   WINDOWS_CODESIGN_PFX_BASE64
+      #     Base64-encoded PFX file containing the code-signing certificate and
+      #     private key.  Encode an existing certificate with:
+      #       PowerShell : [Convert]::ToBase64String([IO.File]::ReadAllBytes('cert.pfx'))
+      #       bash/Linux : base64 -w 0 cert.pfx
+      #
+      #   WINDOWS_CODESIGN_PFX_PASSWORD
+      #     Password protecting the PFX file.
+      #
+      #   WINDOWS_CODESIGN_TIMESTAMP_URL  (optional)
+      #     RFC 3161 timestamp authority URL.  Defaults to DigiCert's server:
+      #       http://timestamp.digicert.com
+      #     Other common choices:
+      #       http://timestamp.sectigo.com
+      #       http://timestamp.globalsign.com/scripts/timestamp.dll
+      #
+      # Where to obtain a code-signing certificate
+      # ───────────────────────────────────────────
+      #   OV / EV certificates (both suppress SmartScreen warnings):
+      #     • DigiCert  – https://www.digicert.com/signing/code-signing-certificates
+      #     • Sectigo   – https://sectigo.com/ssl-certificates-tls/code-signing
+      #     • GlobalSign – https://www.globalsign.com/en/code-signing-certificate
+      #   EV certificates build SmartScreen reputation faster than OV certificates.
+
+      - name: Build Tauri release (Windows)
+        if: runner.os == 'Windows'
+        run: npm run tauri:build
+
+      - name: Sign Windows artifacts
+        if: ${{ runner.os == 'Windows' && secrets.WINDOWS_CODESIGN_PFX_BASE64 != '' }}
+        shell: pwsh
+        env:
+          WINDOWS_CODESIGN_PFX_BASE64: ${{ secrets.WINDOWS_CODESIGN_PFX_BASE64 }}
+          WINDOWS_CODESIGN_PFX_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_PFX_PASSWORD }}
+          WINDOWS_CODESIGN_TIMESTAMP_URL: ${{ secrets.WINDOWS_CODESIGN_TIMESTAMP_URL }}
+        run: |
+          # Write the PFX to a temporary file – contents are never echoed.
+          $certBytes = [Convert]::FromBase64String($env:WINDOWS_CODESIGN_PFX_BASE64)
+          $certPath  = Join-Path $env:RUNNER_TEMP 'codesign.pfx'
+          [IO.File]::WriteAllBytes($certPath, $certBytes)
+
+          try {
+            # Import the certificate into the current-user store and capture
+            # the thumbprint so we can reference the certificate by hash.
+            $securePwd  = ConvertTo-SecureString -String $env:WINDOWS_CODESIGN_PFX_PASSWORD `
+                                                 -Force -AsPlainText
+            $cert       = Import-PfxCertificate -FilePath $certPath `
+                                                -CertStoreLocation Cert:\CurrentUser\My `
+                                                -Password $securePwd
+            $thumbprint = $cert.Thumbprint
+            Write-Host "Certificate imported. Thumbprint: $thumbprint"
+
+            # Resolve the RFC 3161 timestamp URL (secret → default DigiCert).
+            $timestampUrl = if ($env:WINDOWS_CODESIGN_TIMESTAMP_URL) {
+              $env:WINDOWS_CODESIGN_TIMESTAMP_URL
+            } else {
+              'http://timestamp.digicert.com'
+            }
+            Write-Host "Timestamp URL: $timestampUrl"
+
+            # Collect all Windows installer artifacts produced by tauri build.
+            $artifacts = Get-ChildItem -Path 'src-tauri/target/release/bundle' `
+                                       -Recurse `
+                                       -Include '*.exe', '*.msi'
+            if ($artifacts.Count -eq 0) {
+              Write-Error 'No installer artifacts found under src-tauri/target/release/bundle'
+              exit 1
+            }
+
+            # Sign every artifact with SHA-256 digest and an RFC 3161 timestamp.
+            foreach ($artifact in $artifacts) {
+              Write-Host "Signing: $($artifact.FullName)"
+              signtool sign `
+                /sha1 $thumbprint `
+                /fd   sha256 `
+                /tr   $timestampUrl `
+                /td   sha256 `
+                /v    "$($artifact.FullName)"
+              if ($LASTEXITCODE -ne 0) {
+                Write-Error "signtool sign failed for: $($artifact.FullName)"
+                exit 1
+              }
+            }
+          } finally {
+            # Always remove the PFX file from disk, even when signing fails.
+            Remove-Item -Path $certPath -Force -ErrorAction SilentlyContinue
+          }
+
+      - name: Verify Windows artifact signatures
+        if: ${{ runner.os == 'Windows' && secrets.WINDOWS_CODESIGN_PFX_BASE64 != '' }}
+        shell: pwsh
+        run: |
+          $artifacts = Get-ChildItem -Path 'src-tauri/target/release/bundle' `
+                                     -Recurse `
+                                     -Include '*.exe', '*.msi'
+          foreach ($artifact in $artifacts) {
+            Write-Host "Verifying: $($artifact.FullName)"
+            signtool verify /pa /v "$($artifact.FullName)"
+            if ($LASTEXITCODE -ne 0) {
+              Write-Error "Signature verification failed for: $($artifact.FullName)"
+              exit 1
+            }
+          }
+          Write-Host 'All artifact signatures verified successfully.'
+
+      - name: Upload Windows release artifacts
+        if: runner.os == 'Windows'
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Matrix Notebook ${{ github.ref_name }}
+          body: See the assets below to download and install this version.
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
