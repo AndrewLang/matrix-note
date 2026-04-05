@@ -1,6 +1,6 @@
 [package]
 name = "matrix-notebook"
-version = "0.1.0"
+version = "0.1.4"
 edition = "2021"
 description = "Desktop knowledge notebook powered by Tauri + Angular"
 license = "MIT"

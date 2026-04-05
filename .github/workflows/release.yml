@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "v*"
+    branches:
+      - copilot/trigger-new-release-build
   workflow_dispatch:
 
 permissions:
@@ -32,6 +34,17 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Determine release tag
+        id: release_tag
+        shell: bash
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            echo "RELEASE_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+            VERSION=$(node -p "require('./src-tauri/tauri.conf.json').version")
+            echo "RELEASE_TAG=v${VERSION}" >> $GITHUB_ENV
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -77,8 +90,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: Matrix Notebook ${{ github.ref_name }}
+          tagName: ${{ env.RELEASE_TAG }}
+          releaseName: Matrix Notebook ${{ env.RELEASE_TAG }}
           releaseBody: See the assets below to download and install this version.
           releaseDraft: false
           prerelease: false
@@ -202,8 +215,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Matrix Notebook ${{ github.ref_name }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: Matrix Notebook ${{ env.RELEASE_TAG }}
           body: See the assets below to download and install this version.
           draft: false
           prerelease: false
