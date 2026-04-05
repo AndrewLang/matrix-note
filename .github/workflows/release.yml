@@ -5,6 +5,11 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version tag (e.g. v0.1.4). Defaults to the pushed tag name when triggered by a tag push; must be provided for manual runs."
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -14,6 +19,10 @@ jobs:
     name: Release (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
+
+    env:
+      # Prefer the manually-supplied version input; fall back to the pushed tag.
+      RELEASE_TAG: ${{ inputs.version != '' && inputs.version || github.ref_name }}
 
     strategy:
       fail-fast: false
@@ -27,6 +36,15 @@ jobs:
             os: windows-latest
 
     steps:
+      - name: Validate release tag
+        shell: bash
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::RELEASE_TAG '${RELEASE_TAG}' is not a valid version tag (expected format: v<major>.<minor>.<patch>)."
+            echo "When triggering via workflow_dispatch, supply a version in the 'version' input (e.g. v0.1.4)."
+            exit 1
+          fi
+
       - name: Check out repository
         uses: actions/checkout@v4
 
@@ -74,8 +92,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: Matrix Notebook ${{ github.ref_name }}
+          tagName: ${{ env.RELEASE_TAG }}
+          releaseName: Matrix Notebook ${{ env.RELEASE_TAG }}
           releaseBody: See the assets below to download and install this version.
           releaseDraft: false
           prerelease: false
@@ -200,8 +218,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Matrix Notebook ${{ github.ref_name }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: Matrix Notebook ${{ env.RELEASE_TAG }}
           body: See the assets below to download and install this version.
           draft: false
           prerelease: false
