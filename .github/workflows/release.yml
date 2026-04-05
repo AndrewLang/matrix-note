@@ -26,6 +26,9 @@ jobs:
           - name: Windows
             os: windows-latest
 
+    env:
+      WINDOWS_CODESIGN_PFX_BASE64: ${{ secrets.WINDOWS_CODESIGN_PFX_BASE64 }}
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -118,10 +121,9 @@ jobs:
         run: npm run tauri:build
 
       - name: Sign Windows artifacts
-        if: ${{ runner.os == 'Windows' && secrets.WINDOWS_CODESIGN_PFX_BASE64 != '' }}
+        if: ${{ runner.os == 'Windows' && env.WINDOWS_CODESIGN_PFX_BASE64 != '' }}
         shell: pwsh
         env:
-          WINDOWS_CODESIGN_PFX_BASE64: ${{ secrets.WINDOWS_CODESIGN_PFX_BASE64 }}
           WINDOWS_CODESIGN_PFX_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_PFX_PASSWORD }}
           WINDOWS_CODESIGN_TIMESTAMP_URL: ${{ secrets.WINDOWS_CODESIGN_TIMESTAMP_URL }}
         run: |
@@ -178,7 +180,7 @@ jobs:
           }
 
       - name: Verify Windows artifact signatures
-        if: ${{ runner.os == 'Windows' && secrets.WINDOWS_CODESIGN_PFX_BASE64 != '' }}
+        if: ${{ runner.os == 'Windows' && env.WINDOWS_CODESIGN_PFX_BASE64 != '' }}
         shell: pwsh
         run: |
           $artifacts = Get-ChildItem -Path 'src-tauri/target/release/bundle' `
